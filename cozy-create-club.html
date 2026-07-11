@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cozy Create Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────── TOKENS (from logo) ───────────────────────── */
+:root{
+  --lavender:#A89BC4;
+  --lavender-soft:#EDEAF5;
+  --lavender-mid:#C9C0DE;
+  --cream:#FAF3E7;
+  --cream-deep:#F3E9D8;
+  --coral:#E8542E;
+  --coral-soft:#FBE2DA;
+  --salmon:#F2998A;
+  --salmon-soft:#FCEAE6;
+  --navy:#1A2238;
+  --forest:#1F4A2E;
+  --forest-soft:#E5EDE7;
+  --card:#FFFFFF;
+  --card-warm:#FEFBF6;
+  --border:#EBE3D4;
+  --border-strong:#DCD0BB;
+  --text-body:#3A3450;
+  --text-muted:#8A8098;
+  --text-light:#C4BBCF;
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --blush:#F5E6E0;
+  --r-sm:8px;
+  --r-md:14px;
+  --r-lg:20px;
+  --nav-h:64px;
+  --sidebar-w:220px;
+  --hobby-coloring:var(--coral);
+  --hobby-embroidery:var(--lavender);
+  --hobby-lego:#D4A53A;
+  --hobby-fiction:var(--forest);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--cream)}
+body{font-family:'Inter',sans-serif;color:var(--text-body);overscroll-behavior:none}
+img{display:block;max-width:100%}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ───────────────────────── LAYOUT SHELL ───────────────────────── */
+#app{min-height:100dvh;display:flex;flex-direction:column}
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + 20px)}
+.page.active{display:block}
+.page-inner{max-width:480px;margin:0 auto;padding:0 16px}
+
+/* ───────────────────────── HOBBY SWITCHER (mobile: top scroll) ───────────────────────── */
+.hobby-switcher{
+  display:flex;gap:8px;padding:14px 16px 10px;overflow-x:auto;
+  background:var(--cream);position:sticky;top:0;z-index:50;
+}
+.hobby-switcher::-webkit-scrollbar{display:none}
+.sidebar-modules{display:none}
+.hobby-chip{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;
+  border:1.5px solid var(--border-strong);background:var(--card);
+  font-size:12px;font-weight:500;color:var(--text-muted);white-space:nowrap;flex-shrink:0;transition:all 0.15s;
+}
+.hobby-chip svg{width:15px;height:15px;stroke-width:1.8;opacity:0.7}
+.hobby-chip.active{color:#fff;border-color:transparent}
+.hobby-chip.active svg{opacity:1}
+.hobby-chip[data-hobby="coloring"].active{background:var(--hobby-coloring)}
+.hobby-chip[data-hobby="embroidery"].active{background:var(--hobby-embroidery)}
+.hobby-chip[data-hobby="lego"].active{background:var(--hobby-lego)}
+.hobby-chip[data-hobby="fiction"].active{background:var(--hobby-fiction)}
+
+/* ───────────────────────── BRAND MARK ───────────────────────── */
+.brand-mark{display:flex;align-items:center;gap:9px}
+.brand-icon{
+  width:30px;height:30px;border-radius:9px;background:var(--lavender);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;
+}
+.brand-icon::before{content:'';position:absolute;inset:5px;background:var(--cream);border-radius:5px}
+.brand-icon svg{position:relative;width:13px;height:13px;color:var(--navy);z-index:1}
+.brand-text{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);line-height:1.1}
+.brand-text em{font-style:italic;color:var(--coral)}
+.brand-text small{display:block;font-family:'Inter',sans-serif;font-size:9px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-light);margin-top:1px}
+
+/* ───────────────────────── HERO ───────────────────────── */
+.page-hero{padding:20px 20px 18px;position:relative;overflow:hidden}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+.hero-title{font-family:'Playfair Display',serif;font-size:25px;font-weight:400;color:var(--navy);line-height:1.25}
+.hero-title em{font-style:italic}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6}
+
+/* ───────────────────────── CARDS ───────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:12px}
+.card-warm{background:var(--card-warm)}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--text-muted);line-height:1.65}
+.section-label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-light);margin:22px 0 10px;display:flex;align-items:center;justify-content:space-between}
+.section-label .see-all{font-size:11px;font-weight:500;color:var(--coral);text-transform:none;letter-spacing:0;cursor:pointer}
+
+/* ───────────────────────── BUTTON ───────────────────────── */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:12px 16px;
+  background:var(--coral);color:#fff;font-size:13px;font-weight:500;border-radius:var(--radius-sm);
+  transition:opacity 0.15s,transform 0.1s;
+}
+.btn:active{opacity:0.85;transform:scale(0.98)}
+.btn-ghost{background:transparent;color:var(--coral);border:1px solid var(--coral-soft)}
+.btn-lavender{background:var(--lavender)}
+.btn svg{width:15px;height:15px;stroke-width:2;flex-shrink:0}
+
+/* ───────────────────────── HOME ───────────────────────── */
+.home-banner{
+  background:linear-gradient(135deg,var(--lavender-soft) 0%,var(--cream-deep) 100%);
+  padding:30px 20px 24px;position:relative;overflow:hidden;
+}
+.home-banner h1{font-family:'Playfair Display',serif;font-size:26px;color:var(--navy);line-height:1.3}
+.home-banner h1 em{font-style:italic;color:var(--coral)}
+.home-banner p{font-size:13px;color:var(--text-muted);margin-top:6px}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--cream-deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.status-date{font-size:12px;color:var(--text-muted)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--forest);display:inline-block;margin-right:5px}
+
+.moodboard-grid{display:flex;flex-direction:column;gap:10px}
+.mood-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;cursor:pointer;transition:all 0.12s}
+.mood-card:active{transform:scale(0.99)}
+.mood-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.mood-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mood-icon svg{width:18px;height:18px;stroke-width:1.7;color:#fff}
+.mood-card[data-hobby="coloring"] .mood-icon{background:var(--hobby-coloring)}
+.mood-card[data-hobby="embroidery"] .mood-icon{background:var(--hobby-embroidery)}
+.mood-card[data-hobby="lego"] .mood-icon{background:var(--hobby-lego)}
+.mood-card[data-hobby="fiction"] .mood-icon{background:var(--hobby-fiction)}
+.mood-card-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-light)}
+.mood-card-hobby{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy)}
+.mood-card-trend{font-size:12.5px;color:var(--text-muted);line-height:1.55;padding-left:44px}
+.mood-card-swatches{display:flex;gap:5px;padding-left:44px;margin-top:8px}
+.mini-swatch{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,0.06)}
+
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;cursor:pointer;transition:all 0.12s}
+.qa-card:active{background:var(--lavender-soft)}
+.qa-card svg{width:20px;height:20px;stroke-width:1.6;color:var(--coral);margin-bottom:8px}
+.qa-card strong{display:block;font-family:'Playfair Display',serif;font-weight:400;font-size:14px;color:var(--navy);margin-bottom:2px}
+.qa-card span{font-size:11px;color:var(--text-light)}
+
+/* ───────────────────────── BOOK LIBRARY (clickable) ───────────────────────── */
+.book-row{
+  display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.12s;border-radius:8px;
+}
+.book-row:last-child{border-bottom:none}
+.book-row:active{background:var(--lavender-soft)}
+.book-cover{
+  width:34px;height:42px;border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+.book-cover svg{width:14px;height:14px;color:rgba(255,255,255,0.85)}
+.book-info{flex:1;min-width:0}
+.book-name{font-size:13.5px;font-weight:500;color:var(--text-body)}
+.book-meta{font-size:11px;color:var(--text-light);margin-top:1px}
+.book-chevron{width:16px;height:16px;color:var(--text-light);flex-shrink:0}
+.add-book-row{
+  display:flex;align-items:center;gap:12px;padding:11px 4px;cursor:pointer;
+  border-radius:8px;transition:background 0.12s;
+}
+.add-book-row:active{background:var(--lavender-soft)}
+.add-book-icon{
+  width:34px;height:42px;border-radius:4px;border:1.5px dashed var(--border-strong);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.add-book-icon svg{width:14px;height:14px;color:var(--text-light)}
+.add-book-row span{font-size:13px;color:var(--text-muted);font-weight:500}
+
+/* book cover color variety */
+.cover-1{background:linear-gradient(160deg,#E8B4A8,#E8542E)}
+.cover-2{background:linear-gradient(160deg,#C9C0DE,#A89BC4)}
+.cover-3{background:linear-gradient(160deg,#F2998A,#E8542E)}
+.cover-4{background:linear-gradient(160deg,#9FC2A8,#1F4A2E)}
+.cover-5{background:linear-gradient(160deg,#E6C77A,#D4A53A)}
+
+/* ───────────────────────── BOOK DETAIL PAGE ───────────────────────── */
+.book-hero{padding:24px 20px 20px;position:relative;overflow:hidden;display:flex;gap:16px;align-items:flex-end}
+.book-hero-cover{width:64px;height:80px;border-radius:6px;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,0.12)}
+.book-hero-info{flex:1;padding-bottom:2px}
+.book-hero-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--navy);line-height:1.2}
+.book-hero-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding:14px 16px;background:var(--card-warm);border-bottom:1px solid var(--border)}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);background:var(--card);white-space:nowrap;flex-shrink:0;cursor:pointer}
+.filter-chip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral);font-weight:500}
+.insp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.insp-tile{border-radius:var(--radius-sm);overflow:hidden;background:var(--card);border:1px solid var(--border);cursor:pointer}
+.insp-tile-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;background:var(--cream-deep);overflow:hidden}
+.insp-tile-img svg{width:24px;height:24px;color:rgba(255,255,255,0.7)}
+.insp-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.4s}
+.insp-img.ready{opacity:1}
+.insp-tile-label{padding:8px 10px;font-size:11px;color:var(--text-muted)}
+.insp-tag{position:absolute;top:6px;left:6px;font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--navy)}
+
+/* ───────────────────────── TREND PULSE (Module 05) ───────────────────────── */
+.trend-updated{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:4px}
+.palette-grid{display:flex;flex-direction:column;gap:10px}
+.palette-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px}
+.palette-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:3px}
+.palette-note{font-size:12.5px;color:var(--text-muted);line-height:1.55;margin-bottom:10px}
+.swatch-row{display:flex;gap:6px}
+.swatch{flex:1;height:34px;border-radius:7px;border:1px solid rgba(0,0,0,0.06);position:relative;cursor:pointer}
+.swatch span{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:8.5px;color:var(--text-light);opacity:0;transition:opacity 0.15s}
+.swatch:hover span{opacity:1}
+.trend-format{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 15px;margin-bottom:9px}
+.trend-format-icon{width:32px;height:32px;border-radius:9px;background:var(--coral-soft);color:var(--coral);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trend-format-icon svg{width:16px;height:16px;stroke-width:1.8}
+.trend-format strong{display:block;font-size:13px;font-weight:500;color:var(--navy);margin-bottom:2px}
+.trend-format p{font-size:12px;color:var(--text-muted);line-height:1.55}
+.trend-refresh{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--card);border:1px solid var(--coral);color:var(--coral);border-radius:var(--radius-sm);font-size:12.5px;font-weight:500;margin-top:14px}
+.trend-refresh svg{width:14px;height:14px;stroke-width:2}
+.trend-refresh.loading{opacity:0.6;pointer-events:none}
+@media(min-width:900px){
+  .palette-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+}
+
+/* ───────────────────────── CONTENT IDEAS (Module 03) ───────────────────────── */
+.ideas-hobby-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px}
+.ideas-hobby-row::-webkit-scrollbar{display:none}
+.ih-chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border-strong);font-size:12.5px;font-weight:500;color:var(--text-muted);background:var(--card);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all 0.15s}
+.ih-chip.on[data-hobby="coloring"]{background:var(--hobby-coloring);border-color:transparent;color:#fff}
+.ih-chip.on[data-hobby="embroidery"]{background:var(--hobby-embroidery);border-color:transparent;color:#fff}
+.ih-chip.on[data-hobby="lego"]{background:var(--hobby-lego);border-color:transparent;color:#fff}
+.ih-chip.on[data-hobby="fiction"]{background:var(--hobby-fiction);border-color:transparent;color:#fff}
+.idea-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:11px}
+.idea-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.idea-title{font-family:'Playfair Display',serif;font-size:15.5px;color:var(--navy);line-height:1.35}
+.idea-format{font-size:10px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:12px;background:var(--coral-soft);color:var(--coral);flex-shrink:0;white-space:nowrap}
+.idea-note{font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:10px}
+.idea-signal{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-body);background:var(--lavender-soft);border-radius:8px;padding:6px 10px;line-height:1.45}
+.idea-signal svg{width:12px;height:12px;stroke-width:2;color:var(--lavender);flex-shrink:0}
+@media(min-width:900px){
+  #ideas-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .idea-card{margin-bottom:0}
+}
+
+/* ───────────────────────── TUTORIALS (Module 04) ───────────────────────── */
+.tut-filter-block{margin-bottom:14px}
+.tut-filter-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);margin-bottom:7px}
+.tut-chip-row{display:flex;gap:6px;overflow-x:auto}
+.tut-chip-row::-webkit-scrollbar{display:none}
+.tut-track{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;margin-bottom:10px}
+.tut-track-body{flex:1;min-width:0}
+.tut-track-top{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.tut-track-title{font-size:13.5px;font-weight:500;color:var(--navy)}
+.tut-lvl{font-size:9.5px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;padding:2px 8px;border-radius:10px}
+.tut-lvl.b{background:var(--forest-soft);color:var(--forest)}
+.tut-lvl.i{background:var(--lavender-soft);color:var(--lavender)}
+.tut-lvl.a{background:var(--coral-soft);color:var(--coral)}
+.tut-track-note{font-size:12px;color:var(--text-muted);line-height:1.55}
+.tut-yt{display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:11.5px;font-weight:500;color:var(--navy);flex-shrink:0;transition:all 0.12s;white-space:nowrap}
+.tut-yt:hover{border-color:#FF0000;background:#FFF5F5}
+.tut-yt svg{width:14px;height:14px;color:#FF0000;flex-shrink:0}
+.tut-tips{background:var(--card-warm);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px}
+.tut-tips-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--coral);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tut-tips-label svg{width:13px;height:13px;stroke-width:2}
+.tut-tip{display:flex;gap:8px;font-size:12.5px;color:var(--text-body);line-height:1.6;margin-bottom:6px}
+.tut-tip:last-child{margin-bottom:0}
+.tut-tip::before{content:'·';color:var(--coral);font-weight:700}
+@media(min-width:900px){
+  #tut-tracks{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tut-track{margin-bottom:0}
+}
+
+/* ───────────────────────── INSPIRATION GALLERY (Module 01) ───────────────────────── */
+.gal-tabs{display:flex;gap:8px;margin-bottom:14px}
+.gal-tab{flex:1;padding:10px;text-align:center;border-radius:var(--radius-sm);border:1.5px solid var(--border-strong);background:var(--card);font-size:12.5px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all 0.15s}
+.gal-tab.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.gal-select{width:100%;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);margin-bottom:12px}
+.gal-textarea{width:100%;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);resize:vertical;min-height:80px;margin-bottom:12px}
+.gal-textarea:focus,.gal-select:focus{outline:none;border-color:var(--coral)}
+.gal-upload-zone{border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:24px;text-align:center;cursor:pointer;margin-bottom:12px;transition:all 0.15s}
+.gal-upload-zone:hover{border-color:var(--coral)}
+.gal-upload-zone svg{width:26px;height:26px;color:var(--text-light);margin-bottom:8px}
+.gal-upload-zone p{font-size:12.5px;color:var(--text-muted)}
+.gal-preview-wrap{position:relative;margin-bottom:12px;border-radius:var(--radius-md);overflow:hidden}
+.gal-preview-img{width:100%;max-height:220px;object-fit:cover;display:block}
+.gal-preview-remove{position:absolute;top:8px;right:8px;background:rgba(26,34,56,0.75);color:#fff;border-radius:20px;padding:5px 11px;font-size:11px;cursor:pointer}
+.gal-analyzing{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-muted);margin-bottom:12px}
+.gal-confidence{background:var(--lavender-soft);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;color:var(--text-body);line-height:1.6;margin-bottom:16px}
+.gal-results-empty{padding:20px;text-align:center;color:var(--text-light);font-size:12.5px}
+
+/* ───────────────────────── COMING SOON ───────────────────────── */
+.coming-soon{display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 24px;color:var(--text-light)}
+.coming-soon svg{width:36px;height:36px;stroke-width:1.3;margin-bottom:14px;opacity:0.5}
+.coming-soon h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--text-muted);margin-bottom:6px;font-weight:400}
+.coming-soon p{font-size:12.5px;line-height:1.6;max-width:280px}
+.module-badge{display:inline-block;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--lavender-soft);color:var(--lavender);margin-top:14px}
+
+/* ───────────────────────── BOTTOM NAV (mobile) ───────────────────────── */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(250,243,231,0.95);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom);z-index:100;
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;cursor:pointer;color:var(--text-light);transition:color 0.15s}
+.nav-item.active{color:var(--coral)}
+.nav-item svg{width:21px;height:21px;stroke-width:1.6;fill:none}
+.nav-item span{font-size:10px;font-weight:500;letter-spacing:0.02em}
+
+/* ───────────────────────── ADD BOOK MODAL ───────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(26,34,56,0.45);
+  z-index:200;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:var(--radius-lg);padding:22px;max-width:340px;width:100%}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px}
+.modal-sub{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.5}
+.modal-field{margin-bottom:12px}
+.modal-label{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:5px;display:block}
+.modal-input{width:100%;padding:10px 12px;background:var(--cream);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body)}
+.modal-input:focus{outline:none;border-color:var(--coral)}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.modal-actions .btn{margin:0}
+.modal-cancel{background:transparent;color:var(--text-muted);border:1px solid var(--border-strong)}
+
+/* ───────────────────────── PATTERN BANK (Module 02) ───────────────────────── */
+.ai-gen-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--coral);color:#fff;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;white-space:nowrap}
+.ai-gen-btn svg{width:14px;height:14px;stroke-width:2}
+
+.filter-bar{background:var(--card-warm);border-bottom:1px solid var(--border);padding:0 16px}
+.pb-filter-row{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.pb-filter-row::-webkit-scrollbar{display:none}
+.f-chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);background:var(--card);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all 0.12s}
+.f-chip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral);font-weight:500}
+.f-chip.lav.on{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.filter-divider{width:1px;background:var(--border);flex-shrink:0;margin:4px 2px}
+.flabel{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);padding:8px 4px;white-space:nowrap;align-self:center}
+
+.search-wrap{padding:12px 16px;background:var(--card-warm);position:relative}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-light);pointer-events:none}
+.search-input{width:100%;padding:10px 14px 10px 36px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--coral)}
+
+.count-bar{padding:10px 20px;font-size:12px;color:var(--text-light);display:flex;align-items:center;justify-content:space-between}
+.count-bar span{color:var(--text-muted);font-weight:500}
+
+.pattern-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px 32px}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;cursor:pointer;transition:all 0.14s}
+.p-card:hover{border-color:var(--coral);box-shadow:0 2px 16px rgba(232,84,46,0.12);transform:translateY(-1px)}
+.p-img-wrap{aspect-ratio:1;position:relative;background:var(--cream-deep);overflow:hidden}
+.p-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;opacity:0}
+.p-img.ready{opacity:1}
+.p-skeleton{position:absolute;inset:0;background:linear-gradient(90deg,var(--cream-deep) 25%,var(--blush) 50%,var(--cream-deep) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.p-fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:linear-gradient(135deg,var(--cream-deep),var(--blush))}
+.p-fallback.show{display:flex}
+.p-fallback svg{width:28px;height:28px;color:var(--text-light)}
+.p-fallback span{font-size:10px;color:var(--text-light)}
+.p-tags{position:absolute;top:7px;left:7px;display:flex;gap:4px;z-index:2}
+.p-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;background:rgba(250,243,231,0.92);color:var(--navy);backdrop-filter:blur(4px)}
+.p-tag.u{background:rgba(168,155,196,0.85);color:#fff}
+.p-photo-credit{position:absolute;bottom:4px;right:6px;font-size:8px;color:rgba(255,255,255,0.7);z-index:2;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+.p-info{padding:10px 11px 12px}
+.p-name{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:2px}
+.p-meta{font-size:11px;color:var(--text-light)}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(26,34,56,0.4);z-index:200}
+.overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.drawer{background:var(--card);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:640px;max-height:92dvh;overflow-y:auto;animation:up 0.22s ease}
+@keyframes up{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.dhandle{width:36px;height:4px;background:var(--border-strong);border-radius:2px;margin:12px auto 0}
+
+.dgallery{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:12px;background:var(--border)}
+.dgallery-cell{aspect-ratio:1;position:relative;background:var(--cream-deep);overflow:hidden}
+.dgallery-cell img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s}
+.dgallery-cell img.ready{opacity:1}
+.dgallery-cell .dskel{position:absolute;inset:0;background:linear-gradient(90deg,var(--cream-deep) 25%,var(--blush) 50%,var(--cream-deep) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.dgallery-credit{position:absolute;bottom:2px;right:4px;font-size:7px;color:rgba(255,255,255,0.6);text-shadow:0 1px 2px rgba(0,0,0,0.5)}
+
+.dslinks{padding:16px 20px 0}
+.dslinks-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:10px}
+.dslinks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slink{display:flex;align-items:center;gap:8px;padding:11px 13px;border:1px solid var(--border-strong);border-radius:var(--r-sm);transition:all 0.12s;cursor:pointer}
+.slink:hover{border-color:var(--coral);background:var(--coral-soft)}
+.slink svg{width:16px;height:16px;flex-shrink:0}
+.slink-name{font-size:12.5px;font-weight:500;color:var(--navy)}
+.slink-sub{font-size:11px;color:var(--text-light);margin-top:1px}
+.slink.pi svg{color:#E60023}
+.slink.ig svg{color:#C13584}
+.slink.yt svg{color:#FF0000}
+.slink.go svg{color:#4285F4}
+
+.dbody{padding:16px 20px 8px}
+.dname{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin-bottom:6px}
+.dbadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.dbadge{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border-strong);color:var(--text-muted)}
+.dbadge.c{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.dbadge.u{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.dsec{margin-bottom:18px}
+.dsec-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:8px}
+.steps{display:flex;flex-direction:column;gap:7px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.stepn{width:20px;height:20px;border-radius:50%;background:var(--coral-soft);color:var(--coral);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.stept{font-size:13px;line-height:1.55}
+.mrow{display:flex;flex-wrap:wrap;gap:8px}
+.mchip{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card-warm)}
+.mdot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+.mname{font-size:12px;font-weight:500;color:var(--navy)}
+.mhex{font-size:10px;color:var(--text-light)}
+.close-btn{width:100%;padding:14px;font-size:13.5px;font-weight:500;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;cursor:pointer}
+
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(26,34,56,0.45);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal-ov.open{display:flex}
+.pb-modal-box{background:var(--card);border-radius:var(--r-lg);padding:22px;max-width:380px;width:100%;max-height:90dvh;overflow-y:auto}
+.mtitle{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px}
+.msub{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
+.mlabel{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:5px;display:block}
+.minput{width:100%;padding:10px 12px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;margin-bottom:12px}
+.minput:focus{border-color:var(--coral)}
+.mchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.mc{padding:5px 11px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);cursor:pointer;transition:all 0.12s}
+.mc.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.mactions{display:flex;gap:8px;margin-top:16px}
+.mbtn{flex:1;padding:11px;font-size:13px;font-weight:500;border-radius:var(--r-sm);background:var(--coral);color:#fff;border:none;cursor:pointer}
+.mcancel{padding:11px 16px;font-size:13px;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--r-sm);background:transparent;cursor:pointer}
+.aiout{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-top:14px;font-size:13px;color:var(--text-body);line-height:1.7;display:none;white-space:pre-wrap;max-height:260px;overflow-y:auto}
+.aiout b,.aiout strong{font-weight:500;color:var(--navy)}
+.ldr{display:none;flex-direction:column;align-items:center;padding:20px;gap:10px}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--coral);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 24px;color:var(--text-light)}
+.empty.show{display:flex}
+.empty svg{width:32px;height:32px;stroke-width:1.3;margin-bottom:12px;opacity:0.4}
+.empty p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+@media(min-width:900px){
+  .pattern-grid{grid-template-columns:repeat(4,1fr);padding:0 24px 40px}
+  .filter-bar,.search-wrap,.count-bar{padding-left:24px;padding-right:24px}
+  .overlay{align-items:center}
+  .drawer{border-radius:var(--r-lg);max-height:85dvh}
+  .dslinks-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(min-width:1200px){.pattern-grid{grid-template-columns:repeat(5,1fr)}}
+
+/* ════════════════════════════════════════════════════════════
+   DESKTOP / WIDE LAYOUT  (≥ 900px)
+   ════════════════════════════════════════════════════════════ */
+@media (min-width:900px){
+  body{background:var(--cream-deep)}
+  #app{flex-direction:row;max-width:1280px;margin:0 auto;min-height:100dvh}
+
+  /* sidebar replaces hobby switcher + bottom nav */
+  .hobby-switcher{
+    display:flex;flex-direction:column;align-items:stretch;
+    width:var(--sidebar-w);flex-shrink:0;height:100dvh;position:sticky;top:0;
+    padding:24px 16px;gap:4px;background:var(--cream-deep);border-right:1px solid var(--border);
+    overflow-x:visible;
+  }
+  .sidebar-brand{margin-bottom:28px;padding:0 6px}
+  .hobby-chip{
+    width:100%;justify-content:flex-start;border:none;background:transparent;
+    padding:11px 12px;font-size:13px;border-radius:10px;
+  }
+  .hobby-chip.active{box-shadow:none}
+  .hobby-chip:not(.active):hover{background:var(--card)}
+
+  .sidebar-modules{margin-top:18px;display:flex;flex-direction:column;gap:2px}
+  .sidebar-modules.hide-modules{display:none}
+  .sidebar-section-label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-light);padding:10px 12px 6px}
+  .sidebar-module-link{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;
+    font-size:12.5px;color:var(--text-muted);cursor:pointer;
+  }
+  .sidebar-module-link:hover{background:var(--card)}
+  .sidebar-module-link.active{background:var(--card);color:var(--navy);font-weight:500}
+  .sidebar-module-link svg{width:16px;height:16px;stroke-width:1.7;flex-shrink:0}
+
+  #bottom-nav{display:none !important}
+
+  .page{flex:1;padding-bottom:40px;background:var(--cream)}
+  .page-inner{max-width:980px;padding:0 40px}
+
+  .home-banner{padding:48px 40px 36px}
+  .home-banner h1{font-size:38px}
+  .home-banner p{font-size:14px;margin-top:8px}
+  .status-bar{padding:12px 40px}
+
+  .page-hero{padding:36px 40px 28px}
+  .hero-title{font-size:32px}
+  .hero-sub{font-size:14px;max-width:520px}
+
+  .section-label{margin:30px 0 14px}
+
+  /* moodboard becomes a 2-col grid on desktop */
+  .moodboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  /* quick actions becomes 4-col */
+  .quick-actions{grid-template-columns:repeat(4,1fr)}
+  .qa-card{padding:18px}
+
+  /* book library becomes a grid of cover cards instead of a list */
+  .card{padding:22px}
+  .book-library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .book-row{flex-direction:column;align-items:flex-start;padding:0;border:none;gap:0}
+  .book-row:hover{background:transparent}
+  .book-row .book-cover{width:100%;height:140px;border-radius:8px;margin-bottom:10px}
+  .book-row .book-cover svg{width:24px;height:24px}
+  .book-row .book-info{width:100%}
+  .book-row .book-chevron{display:none}
+  .add-book-row{flex-direction:column;align-items:flex-start;padding:0;gap:0}
+  .add-book-row .add-book-icon{width:100%;height:140px;border-radius:8px;margin-bottom:10px}
+
+  .insp-grid{grid-template-columns:repeat(4,1fr)}
+  .filter-row{padding:16px 40px}
+  .book-hero{padding:32px 40px 26px}
+  .book-hero-cover{width:84px;height:104px}
+  .book-hero-title{font-size:26px}
+
+  .coming-soon{padding:80px 24px}
+}
+
+@media (min-width:1180px){
+  .insp-grid{grid-template-columns:repeat(5,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════ HOBBY SWITCHER / SIDEBAR ══════════ -->
+<div class="hobby-switcher">
+  <div class="sidebar-brand brand-mark">
+    <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg></div>
+    <div class="brand-text">Cozy <em>Create</em><small>Club</small></div>
+  </div>
+
+  <button class="hobby-chip active" data-hobby="coloring" onclick="switchHobby('coloring',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    Coloring
+  </button>
+  <button class="hobby-chip" data-hobby="embroidery" onclick="switchHobby('embroidery',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>
+    Embroidery
+  </button>
+  <button class="hobby-chip" data-hobby="lego" onclick="switchHobby('lego',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg>
+    Lego
+  </button>
+  <button class="hobby-chip" data-hobby="fiction" onclick="switchHobby('fiction',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    Fiction
+  </button>
+
+  <div class="sidebar-modules" id="sidebar-modules">
+    <div class="sidebar-section-label">Coloring</div>
+    <div class="sidebar-module-link" data-page="coloring-home" onclick="goPage('coloring-home')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Overview
+    </div>
+    <div class="sidebar-module-link" data-page="trends" onclick="goPage('trends')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Trend pulse
+    </div>
+    <div class="sidebar-module-link" data-page="gallery" onclick="goPage('gallery')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Inspiration
+    </div>
+    <div class="sidebar-module-link" data-page="patterns" onclick="goPage('patterns')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Patterns
+    </div>
+    <div class="sidebar-module-link" data-page="ideas" onclick="goPage('ideas')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>Content ideas
+    </div>
+    <div class="sidebar-module-link" data-page="tutorials" onclick="goPage('tutorials')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>Tutorials
+    </div>
+    <div class="sidebar-module-link" data-page="studio" onclick="goPage('studio')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>Studio setup
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page active" id="pg-home">
+  <div class="home-banner">
+    <div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--coral);margin-bottom:6px">Your creative studio</div>
+    <h1>Cozy Create<br><em>Club</em></h1>
+    <p>One glance across everything you make.</p>
+  </div>
+  <div class="status-bar">
+    <span class="status-date" id="home-date"></span>
+    <span style="font-size:12px;color:var(--forest)"><span class="status-dot"></span>Live trends</span>
+  </div>
+  <div class="page-inner" style="padding-top:18px">
+
+    <div class="section-label">Across your hobbies<span class="see-all">Today</span></div>
+    <div class="moodboard-grid">
+      <div class="mood-card" data-hobby="coloring" onclick="goHobbyHome('coloring')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div><div class="mood-card-label">Coloring</div><div class="mood-card-hobby" id="mood-title-coloring">Today's palette is leaning warm</div></div>
+        </div>
+        <div class="mood-card-trend" id="mood-trend-coloring">Terracotta and sage pairings are trending across cozy illustrated pages this week.</div>
+        <div class="mood-card-swatches" id="mood-swatches-coloring">
+          <div class="mini-swatch" style="background:#E8542E"></div>
+          <div class="mini-swatch" style="background:#9FC2A8"></div>
+          <div class="mini-swatch" style="background:#E6C77A"></div>
+          <div class="mini-swatch" style="background:#1A2238"></div>
+        </div>
+      </div>
+      <div class="mood-card" data-hobby="embroidery" onclick="goHobbyHome('embroidery')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg></div>
+          <div><div class="mood-card-label">Embroidery</div><div class="mood-card-hobby" id="mood-title-embroidery">Monthly calendar season</div></div>
+        </div>
+        <div class="mood-card-trend" id="mood-trend-embroidery">Paper embroidery calendars with seasonal florals are having a moment this month.</div>
+      </div>
+      <div class="mood-card" data-hobby="lego" onclick="goHobbyHome('lego')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg></div>
+          <div><div class="mood-card-label">Lego</div><div class="mood-card-hobby" id="mood-title-lego">Botanical sets are buzzing</div></div>
+        </div>
+        <div class="mood-card-trend" id="mood-trend-lego">Build-and-display content for botanical and architecture sets is getting strong engagement.</div>
+      </div>
+      <div class="mood-card" data-hobby="fiction" onclick="goHobbyHome('fiction')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div><div class="mood-card-label">Fiction</div><div class="mood-card-hobby" id="mood-title-fiction">Cozy fantasy still dominates</div></div>
+        </div>
+        <div class="mood-card-trend" id="mood-trend-fiction">BookTok continues to favor cozy fantasy and romantasy releases this season.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Quick access · coloring</div>
+    <div class="quick-actions">
+      <div class="qa-card" onclick="goPage('trends')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <strong>Trend pulse</strong><span>Today's palette & pattern intel</span>
+      </div>
+      <div class="qa-card" onclick="goPage('gallery')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Inspiration</strong><span>Find references for a page</span>
+      </div>
+      <div class="qa-card" onclick="goPage('patterns')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <strong>Pattern bank</strong><span>Browse and reuse patterns</span>
+      </div>
+      <div class="qa-card" onclick="goPage('tutorials')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <strong>Tutorials</strong><span>Learn as you color</span>
+      </div>
+    </div>
+
+    <div class="section-label">Your Cocowyo books<span class="see-all" onclick="openAddBookModal()">+ Add a book</span></div>
+    <div class="card">
+      <div class="book-library-grid" id="book-library">
+        <div class="book-row" onclick="openBook('Comfy Corners','cover-1')">
+          <div class="book-cover cover-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="book-info"><div class="book-name">Comfy Corners</div><div class="book-meta">24 references</div></div>
+          <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="book-row" onclick="openBook('Cozy Days','cover-2')">
+          <div class="book-cover cover-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="book-info"><div class="book-name">Cozy Days</div><div class="book-meta">18 references</div></div>
+          <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="book-row" onclick="openBook('Girl Moments','cover-3')">
+          <div class="book-cover cover-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="book-info"><div class="book-name">Girl Moments</div><div class="book-meta">31 references</div></div>
+          <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="book-row" onclick="openBook('Cozy Cuties','cover-4')">
+          <div class="book-cover cover-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="book-info"><div class="book-name">Cozy Cuties</div><div class="book-meta">15 references</div></div>
+          <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="book-row" onclick="openBook('Cozy Friends','cover-5')">
+          <div class="book-cover cover-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="book-info"><div class="book-name">Cozy Friends</div><div class="book-meta">21 references</div></div>
+          <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="add-book-row" onclick="openAddBookModal()">
+          <div class="add-book-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+          <span>Add a book</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ COLORING HOBBY HOME ══════════ -->
+<div class="page" id="pg-coloring-home">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Coloring studio</div>
+    <h1 class="hero-title">Your <em style="color:var(--coral)">coloring</em> hub</h1>
+    <p class="hero-sub">Inspiration, patterns, tutorials, and trends — everything for your next page.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="quick-actions">
+      <div class="qa-card" onclick="goPage('gallery')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Inspiration gallery</strong><span>Match a page or browse a book</span>
+      </div>
+      <div class="qa-card" onclick="goPage('patterns')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <strong>Pattern bank</strong><span>Floral, geometric, texture</span>
+      </div>
+      <div class="qa-card" onclick="goPage('ideas')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+        <strong>Content ideas</strong><span>Trend-tied post angles</span>
+      </div>
+      <div class="qa-card" onclick="goPage('tutorials')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <strong>Tutorials</strong><span>By medium and skill</span>
+      </div>
+      <div class="qa-card" onclick="goPage('trends')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <strong>Trend pulse</strong><span>Full detailed brief</span>
+      </div>
+      <div class="qa-card" onclick="goPage('studio')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        <strong>Studio setup</strong><span>Shooting & background ideas</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BOOK DETAIL PAGE (template, filled dynamically) ══════════ -->
+<div class="page" id="pg-book-detail">
+  <div class="book-hero" id="book-hero" style="background:var(--lavender-soft)">
+    <div class="book-hero-cover cover-1" id="book-hero-cover"></div>
+    <div class="book-hero-info">
+      <div class="book-hero-title" id="book-hero-title">Book name</div>
+      <div class="book-hero-sub" id="book-hero-sub">Inspiration gallery</div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-chip on" onclick="toggleFilter(this)">All</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Trending now</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Pastel themes</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Most popular</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Recently posted</div>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="card" style="background:var(--lavender-soft);border:none">
+      <div class="card-desc">This is a general style gallery for this book. To find references for one specific page, upload a photo or describe the scene from the inspiration gallery instead.</div>
+      <button class="btn btn-lavender" style="margin-top:12px;width:auto;padding:9px 16px;display:inline-flex" onclick="goPage('gallery')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Match a specific page
+      </button>
+    </div>
+    <div class="section-label">Style gallery</div>
+    <div class="insp-grid" id="book-insp-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════ PLACEHOLDER MODULE PAGES ══════════ -->
+<div class="page" id="pg-trends">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Daily update</div>
+    <h1 class="hero-title">Trend <em style="color:var(--coral)">pulse</em></h1>
+    <p class="hero-sub">Palettes, patterns & what's catching on right now.</p>
+    <button class="trend-refresh" id="trend-refresh-btn" onclick="refreshTrends()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 11-2.64-6.36M21 3v6h-6"/></svg>
+      Refresh with AI
+    </button>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="trend-updated"><span class="status-dot"></span><span id="trend-updated-label"></span></div>
+
+    <div class="section-label">Palettes leaning in</div>
+    <div class="palette-grid" id="trend-palettes"></div>
+
+    <div class="section-label" style="margin-top:28px">Trending themes<span class="see-all">Tap to explore on Pinterest</span></div>
+    <div class="insp-grid" id="trend-themes"></div>
+
+    <div class="section-label" style="margin-top:28px">Formats that are peaking</div>
+    <div id="trend-formats"></div>
+  </div>
+</div>
+
+<div class="page" id="pg-gallery">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Find references</div>
+    <h1 class="hero-title">Inspiration <em style="color:var(--coral)">gallery</em></h1>
+    <p class="hero-sub">Upload or describe a page, or browse a book's general style.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+
+    <div class="gal-tabs">
+      <div class="gal-tab on" data-mode="describe" onclick="setGalMode('describe',this)">Describe the page</div>
+      <div class="gal-tab" data-mode="upload" onclick="setGalMode('upload',this)">Upload a photo</div>
+    </div>
+
+    <label class="modal-label" style="margin-bottom:5px;display:block">Which book?</label>
+    <select class="gal-select" id="gal-book"></select>
+
+    <div id="gal-describe-panel">
+      <label class="modal-label" style="margin-bottom:5px;display:block">Describe the scene</label>
+      <textarea class="gal-textarea" id="gal-scene" placeholder="e.g. girl watering plants in a greenhouse"></textarea>
+    </div>
+
+    <div id="gal-upload-panel" style="display:none">
+      <div class="gal-upload-zone" id="gal-upload-zone" onclick="document.getElementById('gal-file').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+        <p>Tap to upload a photo of your page</p>
+      </div>
+      <input type="file" accept="image/*" id="gal-file" style="display:none" onchange="handleGalUpload(event)">
+      <div id="gal-preview-wrap"></div>
+      <div id="gal-analyzing" class="gal-analyzing" style="display:none"><div class="spinner" style="width:14px;height:14px"></div> Looking at your photo…</div>
+      <label class="modal-label" style="margin-bottom:5px;display:block">Scene description (edit if needed)</label>
+      <textarea class="gal-textarea" id="gal-scene-upload" placeholder="Description will appear here after upload — or type your own"></textarea>
+    </div>
+
+    <button class="btn" onclick="findReferences()">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Find references
+    </button>
+
+    <div id="gal-results" style="margin-top:24px"></div>
+
+  </div>
+</div>
+
+<div class="page" id="pg-patterns">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Your library</div>
+    <h1 class="hero-title">Pattern <em style="color:var(--coral)">bank</em></h1>
+    <p class="hero-sub">Browse by category or by where you'd use it.</p>
+    <button class="ai-gen-btn" onclick="openAI()" style="margin-top:14px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+      Generate
+    </button>
+  </div>
+
+  <div class="filter-bar">
+    <div class="pb-filter-row">
+      <span class="flabel">Category</span>
+      <div class="f-chip on" data-d="cat" data-v="all" onclick="setF('cat','all',this)">All</div>
+      <div class="f-chip" data-d="cat" data-v="floral" onclick="setF('cat','floral',this)">🌸 Floral</div>
+      <div class="f-chip" data-d="cat" data-v="geometric" onclick="setF('cat','geometric',this)">◇ Geometric</div>
+      <div class="f-chip" data-d="cat" data-v="texture" onclick="setF('cat','texture',this)">≋ Texture</div>
+      <div class="f-chip" data-d="cat" data-v="border" onclick="setF('cat','border',this)">⬚ Border</div>
+      <div class="f-chip" data-d="cat" data-v="novelty" onclick="setF('cat','novelty',this)">✦ Novelty</div>
+      <div class="filter-divider"></div>
+      <span class="flabel">Use</span>
+      <div class="f-chip lav on" data-d="use" data-v="all" onclick="setF('use','all',this)">All</div>
+      <div class="f-chip lav" data-d="use" data-v="background" onclick="setF('use','background',this)">Background</div>
+      <div class="f-chip lav" data-d="use" data-v="clothing" onclick="setF('use','clothing',this)">Clothing</div>
+      <div class="f-chip lav" data-d="use" data-v="border" onclick="setF('use','border',this)">Border</div>
+      <div class="f-chip lav" data-d="use" data-v="filler" onclick="setF('use','filler',this)">Filler</div>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" class="search-input" id="search-input" placeholder="Search patterns…" oninput="render()">
+  </div>
+
+  <div class="count-bar"><div><span id="count">30</span> patterns</div></div>
+  <div class="pattern-grid" id="grid"></div>
+  <div class="empty" id="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <p>No patterns match. Try adjusting filters or generate a new one.</p>
+  </div>
+</div>
+
+<div class="page" id="pg-ideas">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">What to post</div>
+    <h1 class="hero-title">Content <em style="color:var(--coral)">ideas</em></h1>
+    <p class="hero-sub">Relatable angles tied to what's working right now.</p>
+    <button class="trend-refresh" id="ideas-refresh-btn" onclick="refreshIdeas()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+      Fresh angles with AI
+    </button>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="ideas-hobby-row" id="ideas-hobby-row">
+      <div class="ih-chip on" data-hobby="coloring" onclick="setIdeasHobby('coloring')">Coloring</div>
+      <div class="ih-chip" data-hobby="embroidery" onclick="setIdeasHobby('embroidery')">Embroidery</div>
+      <div class="ih-chip" data-hobby="lego" onclick="setIdeasHobby('lego')">Lego</div>
+      <div class="ih-chip" data-hobby="fiction" onclick="setIdeasHobby('fiction')">Fiction</div>
+    </div>
+    <div class="trend-updated" style="margin-bottom:12px"><span class="status-dot"></span><span id="ideas-updated-label"></span></div>
+    <div id="ideas-list"></div>
+  </div>
+</div>
+
+<div class="page" id="pg-tutorials">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Learn & grow</div>
+    <h1 class="hero-title"><em style="color:var(--coral)">Tutorials</em></h1>
+    <p class="hero-sub">By medium, by skill, or tied to what you're coloring now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+
+    <div class="gal-tabs">
+      <div class="gal-tab on" data-tmode="browse" onclick="setTutMode('browse',this)">Browse by medium & skill</div>
+      <div class="gal-tab" data-tmode="wip" onclick="setTutMode('wip',this)">Match my work-in-progress</div>
+    </div>
+
+    <div id="tut-browse-panel">
+      <div class="tut-filter-block">
+        <div class="tut-filter-label">Medium</div>
+        <div class="tut-chip-row" id="tut-medium-row">
+          <div class="f-chip on" data-m="Alcohol markers" onclick="setTutMedium('Alcohol markers',this)">Alcohol markers</div>
+          <div class="f-chip" data-m="Watercolor" onclick="setTutMedium('Watercolor',this)">Watercolor</div>
+          <div class="f-chip" data-m="Gouache" onclick="setTutMedium('Gouache',this)">Gouache</div>
+          <div class="f-chip" data-m="Acrylic markers" onclick="setTutMedium('Acrylic markers',this)">Acrylic markers</div>
+          <div class="f-chip" data-m="Colored pencil" onclick="setTutMedium('Colored pencil',this)">Colored pencil</div>
+        </div>
+      </div>
+      <div class="tut-filter-block">
+        <div class="tut-filter-label">Skill</div>
+        <div class="tut-chip-row" id="tut-skill-row">
+          <div class="f-chip lav on" data-s="blending" onclick="setTutSkill('blending',this)">Blending & shading</div>
+          <div class="f-chip lav" data-s="color" onclick="setTutSkill('color',this)">Color theory</div>
+          <div class="f-chip lav" data-s="effects" onclick="setTutSkill('effects',this)">Effects</div>
+          <div class="f-chip lav" data-s="backgrounds" onclick="setTutSkill('backgrounds',this)">Backgrounds & patterns</div>
+        </div>
+      </div>
+
+      <div class="tut-tips" id="tut-tips"></div>
+      <div class="section-label">Tutorial tracks<span class="see-all">Opens YouTube search</span></div>
+      <div id="tut-tracks"></div>
+    </div>
+
+    <div id="tut-wip-panel" style="display:none">
+      <label class="modal-label" style="margin-bottom:5px;display:block">What are you working on, and what's fighting you?</label>
+      <textarea class="gal-textarea" id="tut-wip-text" placeholder="e.g. coloring a greenhouse page with alcohol markers — the glass panes look flat and I can't get the light right"></textarea>
+      <button class="btn" onclick="matchWip()">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Find matched tutorials
+      </button>
+      <div id="tut-wip-results" style="margin-top:20px"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="page" id="pg-studio">
+  <div class="page-hero" style="background:var(--coral-soft)">
+    <div class="hero-eyebrow" style="color:var(--coral)">Shoot & share</div>
+    <h1 class="hero-title">Studio <em style="color:var(--coral)">setup</em></h1>
+    <p class="hero-sub">Desk layouts, angles, backgrounds and themes for every format.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+      <h3>Module under construction</h3>
+      <p>Shooting setups for photo, video, text and audio posts build here next.</p>
+      <span class="module-badge">Module 09</span>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHT HOBBY HOMES -->
+<div class="page" id="pg-embroidery-home">
+  <div class="page-hero" style="background:var(--lavender-soft)">
+    <div class="hero-eyebrow" style="color:var(--lavender)">Embroidery</div>
+    <h1 class="hero-title">Monthly <em style="color:var(--lavender)">calendar</em></h1>
+    <p class="hero-sub">Trend pulse and content ideas for paper embroidery.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>
+      <h3>Module under construction</h3>
+      <p>Embroidery trend pulse and content ideas build here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-lego-home">
+  <div class="page-hero" style="background:#FAF1DC">
+    <div class="hero-eyebrow" style="color:var(--hobby-lego)">Lego</div>
+    <h1 class="hero-title">Build <em style="color:var(--hobby-lego)">trends</em></h1>
+    <p class="hero-sub">Trend pulse and content ideas for set builds and reviews.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg>
+      <h3>Module under construction</h3>
+      <p>Lego trend pulse and content ideas build here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-fiction-home">
+  <div class="page-hero" style="background:var(--forest-soft)">
+    <div class="hero-eyebrow" style="color:var(--forest)">Fiction</div>
+    <h1 class="hero-title">Reading <em style="color:var(--forest)">pulse</em></h1>
+    <p class="hero-sub">What's trending in BookTok and Bookstagram right now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <h3>Module under construction</h3>
+      <p>Fiction trend pulse builds here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BOTTOM NAV (mobile only) ══════════ -->
+<nav id="bottom-nav">
+  <button class="nav-item active" data-page="home" onclick="goPage('home')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="nav-item" data-page="trends" onclick="goPage('trends')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <span>Trends</span>
+  </button>
+  <button class="nav-item" data-page="gallery" onclick="goPage('gallery')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    <span>Inspire</span>
+  </button>
+  <button class="nav-item" data-page="patterns" onclick="goPage('patterns')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Patterns</span>
+  </button>
+  <button class="nav-item" data-page="tutorials" onclick="goPage('tutorials')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    <span>Learn</span>
+  </button>
+  <button class="nav-item" data-page="studio" onclick="goPage('studio')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+    <span>Studio</span>
+  </button>
+</nav>
+
+</div><!-- #app -->
+
+<!-- ══════════ PATTERN DRAWER ══════════ -->
+<div class="overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="drawer">
+    <div class="dhandle"></div>
+    <div class="dgallery" id="dgallery"></div>
+    <div class="dslinks"><div class="dslinks-label">Find real examples →</div><div class="dslinks-grid" id="dslinks"></div></div>
+    <div class="dbody">
+      <div class="dname" id="dname"></div>
+      <div class="dbadges" id="dbadges"></div>
+      <div class="dsec"><div class="dsec-label">How to draw it</div><div class="steps" id="dsteps"></div></div>
+      <div class="dsec"><div class="dsec-label">Marker colors that work well</div><div class="mrow" id="dmarkers"></div></div>
+    </div>
+    <button class="close-btn" onclick="document.getElementById('overlay').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<!-- ══════════ AI PATTERN MODAL ══════════ -->
+<div class="modal-ov" id="aimodal">
+  <div class="pb-modal-box">
+    <div class="mtitle">Generate a pattern</div>
+    <div class="msub">Describe what you need — get drawing steps, marker colors, and search links for real examples.</div>
+    <label class="mlabel">Describe the pattern</label>
+    <input type="text" class="minput" id="aiprompt" placeholder="e.g. tiny mushrooms on cream, kawaii cute style">
+    <label class="mlabel">Category</label>
+    <div class="mchips" id="aicat">
+      <div class="mc" onclick="pick(this,'aicat')">Floral</div>
+      <div class="mc" onclick="pick(this,'aicat')">Geometric</div>
+      <div class="mc" onclick="pick(this,'aicat')">Texture</div>
+      <div class="mc" onclick="pick(this,'aicat')">Border</div>
+      <div class="mc" onclick="pick(this,'aicat')">Novelty</div>
+    </div>
+    <label class="mlabel">Use case</label>
+    <div class="mchips" id="aiuse">
+      <div class="mc" onclick="pick(this,'aiuse')">Background</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Clothing</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Border</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Filler</div>
+    </div>
+    <div class="ldr" id="ldr"><div class="spinner"></div></div>
+    <div class="aiout" id="aiout"></div>
+    <div class="mactions">
+      <button class="mcancel" onclick="closeAI()">Cancel</button>
+      <button class="mbtn" onclick="runAI()">Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADD BOOK MODAL ══════════ -->
+<div class="modal-overlay" id="add-book-modal">
+  <div class="modal-box">
+    <div class="modal-title">Add a coloring book</div>
+    <div class="modal-sub">Add any book to your library — Cocowyo or otherwise — to start collecting inspiration for it.</div>
+    <div class="modal-field">
+      <label class="modal-label">Book name</label>
+      <input type="text" class="modal-input" id="new-book-name" placeholder="e.g. Garden Friends">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Publisher or artist (optional)</label>
+      <input type="text" class="modal-input" id="new-book-publisher" placeholder="e.g. Cocowyo">
+    </div>
+    <div class="modal-actions">
+      <button class="btn modal-cancel" onclick="closeAddBookModal()">Cancel</button>
+      <button class="btn" onclick="addBook()">Add book</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TODAY = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('home-date').textContent = TODAY;
+
+let currentHobby = 'coloring';
+const coverClasses = ['cover-1','cover-2','cover-3','cover-4','cover-5'];
+let coverIdx = 0;
+let myBooks = ['Comfy Corners','Cozy Days','Girl Moments','Cozy Cuties','Cozy Friends'];
+
+/* ── HOBBY SWITCHING ─── */
+function switchHobby(hobby, btn){
+  currentHobby = hobby;
+  document.querySelectorAll('.hobby-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sidebar-modules').classList.toggle('hide-modules', hobby !== 'coloring');
+  goPage(hobby === 'coloring' ? 'coloring-home' : hobby+'-home');
+}
+
+function goHobbyHome(hobby){
+  document.querySelectorAll('.hobby-chip').forEach(c=>{
+    c.classList.toggle('active', c.dataset.hobby === hobby);
+  });
+  currentHobby = hobby;
+  document.getElementById('sidebar-modules').classList.toggle('hide-modules', hobby !== 'coloring');
+  goPage(hobby === 'coloring' ? 'coloring-home' : hobby+'-home');
+}
+
+/* ── PAGE NAVIGATION ─── */
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item, .sidebar-module-link').forEach(b=>b.classList.remove('active'));
+  const target = document.getElementById('pg-'+id);
+  if(target){ target.classList.add('active'); target.scrollTop = 0; }
+  document.querySelector('.nav-item[data-page="'+id+'"]')?.classList.add('active');
+  document.querySelector('.sidebar-module-link[data-page="'+id+'"]')?.classList.add('active');
+
+  const bottomNav = document.getElementById('bottom-nav');
+  const deepPages = ['trends','gallery','patterns','ideas','tutorials','studio'];
+  bottomNav.style.display = deepPages.includes(id) ? 'flex' : 'none';
+
+  if(id==='ideas' && typeof setIdeasHobby==='function') setIdeasHobby(currentHobby);
+}
+
+/* ── BOOK DETAIL (Module 01 fallback: general book gallery) ─── */
+const bookQueryMap = {
+  'Comfy Corners':'cozy reading nook illustration aesthetic',
+  'Cozy Days':'cozy day aesthetic illustration',
+  'Girl Moments':'girl lifestyle aesthetic illustration',
+  'Cozy Cuties':'cute cozy character illustration',
+  'Cozy Friends':'friends cozy aesthetic illustration',
+};
+function bookBaseQuery(name){ return bookQueryMap[name] || (name+' cozy illustration aesthetic'); }
+const filterQueryMap = {'All':'','Trending now':' trending 2025','Pastel themes':' pastel','Most popular':' popular','Recently posted':' new'};
+
+let currentBookDetail = {name:'', filter:'All'};
+
+function openBook(name, coverClass){
+  document.getElementById('book-hero-title').textContent = name;
+  document.getElementById('book-hero-sub').textContent = 'Cocowyo · Style gallery & inspiration';
+  const cover = document.getElementById('book-hero-cover');
+  cover.className = 'book-hero-cover ' + coverClass;
+  currentBookDetail = {name, filter:'All'};
+  document.querySelectorAll('#pg-book-detail .filter-chip').forEach(c=>c.classList.toggle('on', c.textContent.trim()==='All'));
+  goPage('book-detail');
+  loadBookGallery();
+}
+
+async function loadBookGallery(){
+  const grid = document.getElementById('book-insp-grid');
+  grid.innerHTML = Array.from({length:8}).map(()=>`<div class="insp-tile"><div class="insp-tile-img"><div class="p-skeleton"></div></div></div>`).join('');
+  const query = bookBaseQuery(currentBookDetail.name) + (filterQueryMap[currentBookDetail.filter]||'');
+  const photos = await pexels(query, 8);
+  if(!photos.length){
+    grid.innerHTML = `<div class="gal-results-empty" style="grid-column:1/-1">No images found for this filter — try "All".</div>`;
+    return;
+  }
+  grid.innerHTML = photos.map(p=>`
+    <div class="insp-tile">
+      <div class="insp-tile-img">
+        <img class="insp-img" src="${p.src.medium}" alt="${currentBookDetail.name}" onload="this.classList.add('ready')">
+        <span class="insp-tag">${currentBookDetail.filter}</span>
+      </div>
+      <div class="insp-tile-label">📷 ${p.photographer||'Pexels'}</div>
+    </div>`).join('');
+}
+
+function toggleFilter(el){
+  document.querySelectorAll('#pg-book-detail .filter-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  currentBookDetail.filter = el.textContent.trim();
+  loadBookGallery();
+}
+
+/* ── ADD BOOK MODAL ─── */
+function openAddBookModal(){
+  document.getElementById('add-book-modal').classList.add('open');
+}
+function closeAddBookModal(){
+  document.getElementById('add-book-modal').classList.remove('open');
+  document.getElementById('new-book-name').value = '';
+  document.getElementById('new-book-publisher').value = '';
+}
+function addBook(){
+  const name = document.getElementById('new-book-name').value.trim();
+  const publisher = document.getElementById('new-book-publisher').value.trim();
+  if(!name) return;
+  const cls = coverClasses[coverIdx % coverClasses.length];
+  coverIdx++;
+  const row = document.createElement('div');
+  row.className = 'book-row';
+  row.onclick = function(){ openBook(name, cls); };
+  row.innerHTML = `
+    <div class="book-cover ${cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+    <div class="book-info"><div class="book-name">${name}</div><div class="book-meta">${publisher || 'New · no references yet'}</div></div>
+    <svg class="book-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`;
+  document.getElementById('book-library').insertBefore(row, document.querySelector('.add-book-row'));
+  myBooks.push(name);
+  populateGalBookSelect();
+  closeAddBookModal();
+}
+
+document.getElementById('add-book-modal').addEventListener('click', function(e){
+  if(e.target === this) closeAddBookModal();
+});
+
+/* ══════════ PATTERN BANK (Module 02) ══════════ */
+const PEXELS_KEY = '27Slfj1XQrpsn8nfd5S3gEsNPyauszeggpjMO5O95fQ87d7qCiy48uND';
+const imgCache = {};
+
+async function pexels(query, perPage=1, page=1){
+  const key = query+'|'+perPage+'|'+page;
+  if(imgCache[key]) return imgCache[key];
+  try{
+    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`,{
+      headers:{'Authorization': PEXELS_KEY}
+    });
+    const data = await res.json();
+    imgCache[key] = data.photos || [];
+    return imgCache[key];
+  } catch(e){ return []; }
+}
+
+const P = [
+  {id:1,name:"Tiny daisies",cat:"floral",use:["background","filler"],
+   pq:"daisy floral pattern",gq:["white daisy pattern","yellow daisy fabric","daisy flower print","daisy illustration pattern"],
+   s:{pi:"daisy pattern coloring book marker art",ig:"daisypattern coloringbook",yt:"daisy pattern coloring tutorial markers",go:"daisy repeat pattern coloring inspiration"},
+   steps:["Draw a small circle (4–5mm) for the centre, fill with yellow","Add 6–8 short rounded petals around it","Scatter with equal spacing, stagger rows naturally","Add a tiny leaf beside every third daisy"],
+   mk:[{n:"Petal white",h:"#F5F0E8"},{n:"Sunny yellow",h:"#F5C842"},{n:"Leaf green",h:"#5A8C5A"},{n:"Blush centre",h:"#F2A0A0"}]},
+  {id:2,name:"Cherry blossom",cat:"floral",use:["background","clothing"],
+   pq:"cherry blossom pattern pink",gq:["sakura pattern fabric","pink blossom repeat","japanese floral pattern","spring blossom textile"],
+   s:{pi:"cherry blossom coloring book markers",ig:"cherryblossom coloringpage",yt:"sakura pattern coloring markers",go:"cherry blossom pattern coloring inspiration"},
+   steps:["Draw 5 rounded teardrop petals in a ring","Cluster 3–4 blooms on thin branch lines","Vary sizes slightly for a natural feel","Light pink petals, deeper pink centre dot"],
+   mk:[{n:"Sakura light",h:"#F7C5C5"},{n:"Petal deep",h:"#E8909A"},{n:"Branch brown",h:"#8B5E4A"},{n:"Cream bg",h:"#FAF3E7"}]},
+  {id:3,name:"Strawberry print",cat:"floral",use:["background","clothing"],
+   pq:"strawberry pattern red fabric",gq:["strawberry repeat textile","cute strawberry print","strawberry fabric design","fruit pattern kawaii"],
+   s:{pi:"strawberry pattern coloring book kawaii",ig:"strawberrypattern coloringbook",yt:"strawberry pattern coloring markers",go:"strawberry print pattern coloring"},
+   steps:["Draw a plump heart shape for each berry","Add 5–7 small white oval seeds on the surface","Draw a green star crown on top","Add tiny 5-petal white flowers between berries"],
+   mk:[{n:"Berry red",h:"#D94040"},{n:"Seed white",h:"#F8F4EC"},{n:"Leaf green",h:"#4A8C5A"},{n:"Flower cream",h:"#FEFAF0"}]},
+  {id:4,name:"Wildflower meadow",cat:"floral",use:["background"],
+   pq:"wildflower botanical pattern illustration",gq:["wildflower pattern fabric","meadow flower textile","botanical floral print","wildflower illustration"],
+   s:{pi:"wildflower meadow pattern coloring book",ig:"wildflowerpattern coloringpage",yt:"wildflower coloring tutorial markers",go:"wildflower meadow coloring inspiration"},
+   steps:["Draw tall thin stems at varied heights","Add different heads: dot clusters, X-shapes, 4-petal blooms","Vary heights — some short, some tall — naturally","Fill gaps with tiny leaves and grass blades"],
+   mk:[{n:"Lavender",h:"#A89BC4"},{n:"Meadow green",h:"#5A8C6A"},{n:"Sunflower",h:"#F0C040"},{n:"Coral",h:"#E8542E"},{n:"Sky blue",h:"#8BBEDC"}]},
+  {id:5,name:"Rose garden",cat:"floral",use:["background","clothing"],
+   pq:"rose pattern floral pink seamless",gq:["rose repeat fabric","pink roses textile","vintage rose pattern","rose illustration print"],
+   s:{pi:"rose pattern coloring book marker",ig:"rosepattern coloringbook",yt:"rose pattern coloring tutorial",go:"rose repeat pattern coloring"},
+   steps:["Draw a tight spiral for the rose centre","Add 3 rings of petals, each row larger and more open","Keep outermost petal edges loose and wavy","Scatter at different angles; add simple leaf pairs between roses"],
+   mk:[{n:"Rose blush",h:"#F2998A"},{n:"Rose deep",h:"#D94060"},{n:"Leaf green",h:"#3D7A40"},{n:"Petal shadow",h:"#C06070"}]},
+  {id:6,name:"Sunflower field",cat:"floral",use:["background","clothing"],
+   pq:"sunflower pattern yellow seamless fabric",gq:["sunflower repeat textile","sunflower print fabric","sunflower design pattern","sunflower illustration"],
+   s:{pi:"sunflower pattern coloring book",ig:"sunflowerpattern coloring",yt:"sunflower coloring tutorial marker",go:"sunflower repeat pattern coloring"},
+   steps:["Draw the centre: circle with crosshatch dots","Add 12–14 elongated oval petals radiating out","Alternate slightly shorter petals between main ones","Add broad leaf pairs on a thick stem below each flower"],
+   mk:[{n:"Petal gold",h:"#E8B830"},{n:"Centre brown",h:"#5C3A1E"},{n:"Leaf green",h:"#3D7A40"},{n:"Shadow amber",h:"#C88C20"}]},
+  {id:7,name:"Botanical leaves",cat:"floral",use:["background","clothing","border"],
+   pq:"botanical leaf pattern green fabric",gq:["botanical leaf repeat","tropical leaf pattern","green leaf textile","botanical illustration"],
+   s:{pi:"botanical leaf pattern coloring book",ig:"botanicalpattern coloringbook",yt:"botanical leaf coloring tutorial",go:"botanical leaf pattern coloring"},
+   steps:["Draw varied leaf shapes: oval, elongated, heart-shaped","Add a central midrib and 4–6 veins branching off","Cluster leaves in pairs or threes on thin stems","Use at least 3 green shades for depth"],
+   mk:[{n:"Deep green",h:"#2D5A30"},{n:"Mid green",h:"#5A8C5A"},{n:"Light green",h:"#A0C880"},{n:"Stem brown",h:"#8B6840"}]},
+  {id:8,name:"Checkerboard",cat:"geometric",use:["background","clothing"],
+   pq:"checkerboard pattern colorful aesthetic",gq:["checker pattern pastel","checkerboard fabric","checkered aesthetic","gingham check colorful"],
+   s:{pi:"checkerboard pattern coloring book",ig:"checkerboardpattern coloringbook",yt:"checkerboard pattern coloring",go:"checkerboard pattern coloring inspiration"},
+   steps:["Draw a grid of equally spaced squares","Fill alternating squares with your accent colour","Leave others as base paper colour","Mark the grid lightly in pencil first"],
+   mk:[{n:"Navy",h:"#1A2238"},{n:"Cream",h:"#FAF3E7"},{n:"Dusty rose",h:"#D4A5A5"},{n:"Sage",h:"#7A9E76"}]},
+  {id:9,name:"Moroccan tile",cat:"geometric",use:["background","filler"],
+   pq:"moroccan tile pattern colorful geometric",gq:["moroccan tile blue","zellige tile pattern","moroccan geometric","islamic tile colorful"],
+   s:{pi:"moroccan tile pattern coloring book",ig:"moroccantile coloringpattern",yt:"moroccan tile coloring tutorial",go:"moroccan geometric tile coloring"},
+   steps:["Start with a cross shape in the centre","Draw four pointed petals between the cross arms","Add a smaller diamond at each intersection","Repeat in a tight grid — shapes interlock exactly"],
+   mk:[{n:"Terracotta",h:"#C4603A"},{n:"Teal",h:"#3A8C8A"},{n:"Cream",h:"#F8F0E0"},{n:"Navy",h:"#1A2238"}]},
+  {id:10,name:"Diagonal stripes",cat:"geometric",use:["background","clothing","border"],
+   pq:"diagonal stripe pattern colorful fabric",gq:["diagonal stripes bold","stripe pattern pastel","candy stripe fabric","colorful diagonal textile"],
+   s:{pi:"diagonal stripe pattern coloring book",ig:"stripepattern coloringbook",yt:"stripe pattern coloring tutorial",go:"diagonal stripe pattern coloring"},
+   steps:["Draw parallel diagonal lines at 45°, evenly spaced","Space about 6–8mm apart","Fill alternate bands with colour","For double stripe: add a thin second line beside each main line"],
+   mk:[{n:"Stripe coral",h:"#E8542E"},{n:"Stripe bg",h:"#FAF3E7"},{n:"Stripe lavender",h:"#A89BC4"}]},
+  {id:11,name:"Polka dots",cat:"geometric",use:["background","clothing","filler"],
+   pq:"polka dot pattern pastel colorful",gq:["polka dot retro colorful","pastel dots fabric","colorful dot pattern","large polka dot pastel"],
+   s:{pi:"polka dot pattern coloring book",ig:"polkadot coloringbook",yt:"polka dot coloring tutorial",go:"polka dot pattern coloring"},
+   steps:["Mark a regular grid with light pencil dots","Draw a filled circle at each point — consistent size","Leave equal white space between each dot","Retro look: alternate two dot sizes in staggered rows"],
+   mk:[{n:"Dot coral",h:"#E8542E"},{n:"Dot lavender",h:"#A89BC4"},{n:"Dot navy",h:"#1A2238"},{n:"Bg cream",h:"#FAF3E7"}]},
+  {id:12,name:"Argyle diamonds",cat:"geometric",use:["background","clothing"],
+   pq:"argyle pattern diamond colorful",gq:["argyle pattern classic","diamond argyle textile","colorful argyle fabric","preppy argyle knit"],
+   s:{pi:"argyle pattern coloring book",ig:"argylepattern coloringbook",yt:"argyle diamond coloring tutorial",go:"argyle diamond pattern coloring"},
+   steps:["Draw a large diamond with thin pencil lines","Add a smaller diamond centred inside","Cross-hatch the space between with diagonal lines","Repeat in a brick pattern, alternating colour families"],
+   mk:[{n:"Diamond A",h:"#A89BC4"},{n:"Diamond B",h:"#E8542E"},{n:"Line grey",h:"#B8B0C8"},{n:"Bg cream",h:"#F8F4EE"}]},
+  {id:13,name:"Scallop tiles",cat:"geometric",use:["background","border"],
+   pq:"scallop pattern fish scale colorful",gq:["scallop tile pattern","fish scale colorful","mermaid scale pattern","scallop repeat fabric"],
+   s:{pi:"scallop scale pattern coloring book",ig:"scalloppattern coloringbook",yt:"scallop pattern coloring tutorial",go:"scallop fish scale coloring"},
+   steps:["Draw overlapping semicircles in rows","Each row starts halfway between the circles above","Fill alternating rows with a second colour","Add a small circle dot at each scallop base"],
+   mk:[{n:"Scallop A",h:"#F2998A"},{n:"Scallop B",h:"#FAF3E7"},{n:"Outline",h:"#DCD0BB"},{n:"Dot accent",h:"#A89BC4"}]},
+  {id:14,name:"Houndstooth",cat:"geometric",use:["background","clothing"],
+   pq:"houndstooth pattern fabric classic",gq:["houndstooth black white","colorful houndstooth","pastel houndstooth","modern houndstooth textile"],
+   s:{pi:"houndstooth pattern coloring book",ig:"houndstooth coloringpattern",yt:"houndstooth coloring tutorial",go:"houndstooth pattern coloring"},
+   steps:["Draw an irregular quadrilateral with a notch on one side","Repeat in a 2×2 interlocking tile","Alternate two contrasting colours","Each piece locks perfectly into its neighbours"],
+   mk:[{n:"Dark",h:"#1A2238"},{n:"Light",h:"#F8F4EC"},{n:"Alt warm",h:"#E8C0A0"}]},
+  {id:15,name:"Windowpane grid",cat:"geometric",use:["background","clothing"],
+   pq:"windowpane plaid pattern fabric",gq:["windowpane check fabric","plaid grid textile","tartan windowpane","grid check fabric"],
+   s:{pi:"windowpane plaid coloring book",ig:"plaidpattern coloringbook",yt:"plaid grid coloring tutorial",go:"windowpane grid pattern coloring"},
+   steps:["Draw a regular grid of thin lines, both directions, 15–20mm apart","Add a second grid at 45° over the first for plaid effect","Fill small squares at intersections with a tiny dot","Use 2–3 colours for the crossing lines"],
+   mk:[{n:"Line navy",h:"#1A2238"},{n:"Line coral",h:"#E8542E"},{n:"Dot accent",h:"#A89BC4"},{n:"Bg cream",h:"#FAF3E7"}]},
+  {id:16,name:"Linen weave",cat:"texture",use:["background","clothing"],
+   pq:"linen fabric texture woven natural",gq:["linen texture close up","woven fabric texture","natural linen weave","burlap texture"],
+   s:{pi:"linen texture pattern coloring book",ig:"texturepattern coloringbook",yt:"fabric texture coloring tutorial",go:"linen weave texture coloring"},
+   steps:["Draw closely-spaced horizontal lines across the area","Add vertical lines at the same spacing to form a grid","At each intersection add a tiny square or dot for weave","Keep lines light — subtlety is the point"],
+   mk:[{n:"Thread warm",h:"#C8A87A"},{n:"Thread light",h:"#E8D8C0"},{n:"Shadow",h:"#A08860"}]},
+  {id:17,name:"Honeycomb",cat:"texture",use:["background","filler"],
+   pq:"honeycomb pattern golden hexagon",gq:["honeycomb yellow pattern","hexagon honeycomb texture","golden honeycomb fabric","geometric hexagon golden"],
+   s:{pi:"honeycomb pattern coloring book",ig:"honeycombpattern coloringbook",yt:"honeycomb hexagon coloring tutorial",go:"honeycomb pattern coloring"},
+   steps:["Draw a regular hexagon (6 equal sides)","Tile edge-to-edge — offset each row by half a hex width","Fill alternate hexagons for a 2-tone effect","Add a tiny dot in each hex centre optionally"],
+   mk:[{n:"Hex honey",h:"#E8B830"},{n:"Hex light",h:"#F8E8C0"},{n:"Outline",h:"#C89820"},{n:"Centre dot",h:"#8B6010"}]},
+  {id:18,name:"Crosshatch shade",cat:"texture",use:["filler","clothing"],
+   pq:"crosshatch pattern texture illustration",gq:["crosshatch texture ink","hatching pattern art","pen crosshatch drawing","ink hatching texture"],
+   s:{pi:"crosshatch shading coloring technique",ig:"crosshatch coloringbook",yt:"crosshatch shading coloring tutorial",go:"crosshatch texture coloring"},
+   steps:["Draw parallel diagonal lines at 45°","Add a second set at 45° in the opposite direction","For dense shade: add a third set of verticals","Vary line spacing for light, medium, or heavy shade"],
+   mk:[{n:"Line dark",h:"#3A3450"},{n:"Line mid",h:"#7A7090"},{n:"Line light",h:"#C4BBCF"}]},
+  {id:19,name:"Brick wall",cat:"texture",use:["background"],
+   pq:"brick wall pattern terracotta",gq:["brick pattern terracotta","red brick wall texture","pastel brick pattern","illustrated brick texture"],
+   s:{pi:"brick wall pattern coloring book",ig:"brickpattern coloringbook",yt:"brick wall coloring tutorial",go:"brick wall pattern coloring"},
+   steps:["Draw equal rectangles (2:1 ratio) in horizontal rows","Offset each row by half a brick width","Leave a small gap for mortar lines","Shade each brick lighter at top, darker at bottom"],
+   mk:[{n:"Brick terra",h:"#C4603A"},{n:"Brick shadow",h:"#A04A28"},{n:"Mortar",h:"#E8D8C8"},{n:"Highlight",h:"#D87850"}]},
+  {id:20,name:"Watercolour wash",cat:"texture",use:["background","filler"],
+   pq:"watercolor wash texture pastel abstract",gq:["watercolor wash pastel","watercolor soft blends","watercolor abstract art","soft watercolor texture"],
+   s:{pi:"watercolour wash background coloring",ig:"watercolorwash coloringbook",yt:"watercolour wash coloring tutorial",go:"watercolour wash coloring inspiration"},
+   steps:["Lay a light base wash across the whole area","Drop in a second colour while wet and let it bloom","Add a third colour at one edge — let it bleed naturally","Lift with a dry brush tip for subtle light texture"],
+   mk:[{n:"Rose wash",h:"#F2B0A8"},{n:"Lavender wash",h:"#C4B8D8"},{n:"Sky wash",h:"#A8C8E0"},{n:"Sage wash",h:"#A8C4A8"}]},
+  {id:21,name:"Stitched dashes",cat:"border",use:["border"],
+   pq:"embroidery stitch pattern dashed border",gq:["embroidery stitch border","running stitch pattern","dashed stitch border","cross stitch border"],
+   s:{pi:"stitched border pattern coloring book",ig:"stitchborder coloringbook",yt:"stitched border coloring tutorial",go:"embroidery stitch border coloring"},
+   steps:["Draw a straight or curved line as your border path","Add evenly-spaced rectangular dashes along it","Alternate dash angles for a running-stitch effect","Add tiny cross-stitch X marks at regular intervals"],
+   mk:[{n:"Stitch coral",h:"#E8542E"},{n:"Stitch navy",h:"#1A2238"},{n:"Stitch cream",h:"#F5EDDA"}]},
+  {id:22,name:"Botanical vine border",cat:"border",use:["border"],
+   pq:"botanical vine border illustration leaf",gq:["vine border botanical","leaf vine border","botanical border green","floral vine border"],
+   s:{pi:"botanical vine border coloring book",ig:"vineborder coloringbook",yt:"botanical border coloring tutorial",go:"botanical vine border coloring"},
+   steps:["Draw a wavy vine as the base line","Add small oval leaves alternating left and right","Place tiny flower buds at intervals","Curl vine ends into spirals where it terminates"],
+   mk:[{n:"Vine green",h:"#3D6B40"},{n:"Leaf light",h:"#7AB07A"},{n:"Flower pink",h:"#E8909A"},{n:"Flower yellow",h:"#F5C842"}]},
+  {id:23,name:"Wave border",cat:"border",use:["border","filler"],
+   pq:"wave pattern border blue ocean",gq:["wave border blue","ocean wave pattern","japanese wave design","wave stripe border"],
+   s:{pi:"wave border pattern coloring book",ig:"wavepattern coloringbook",yt:"wave pattern coloring tutorial",go:"wave border pattern coloring"},
+   steps:["Draw a continuous S-curve wave across the border","Add a second wave offset by half a wavelength below","Fill the space between waves with solid colour","Add small dots above each wave crest"],
+   mk:[{n:"Wave blue",h:"#6AB0D0"},{n:"Wave fill",h:"#B8DCF0"},{n:"Dot accent",h:"#1A2238"},{n:"Bg",h:"#FAFCFE"}]},
+  {id:24,name:"Star scatter",cat:"novelty",use:["background","filler","clothing"],
+   pq:"star pattern celestial dark blue gold",gq:["star pattern navy","gold star fabric","celestial star scatter","star constellation pattern"],
+   s:{pi:"star pattern coloring book celestial",ig:"starpattern coloringbook",yt:"star pattern coloring tutorial",go:"celestial star pattern coloring"},
+   steps:["Draw 5-pointed stars of varied sizes — 3mm to 8mm","Scatter at different angles across the surface","Alternate solid stars with outline-only stars","Add tiny 4-point sparkle crosses between larger stars"],
+   mk:[{n:"Star gold",h:"#E8C030"},{n:"Star coral",h:"#E8542E"},{n:"Star lavender",h:"#A89BC4"},{n:"Bg navy",h:"#1A2238"}]},
+  {id:25,name:"Mushroom patch",cat:"novelty",use:["background","filler"],
+   pq:"mushroom pattern cute kawaii illustration",gq:["cute mushroom pattern","kawaii mushroom fabric","toadstool pattern","mushroom print cute"],
+   s:{pi:"mushroom pattern coloring book kawaii",ig:"mushroompattern coloringbook",yt:"mushroom pattern coloring tutorial",go:"cute mushroom pattern coloring"},
+   steps:["Draw a rounded dome for the cap","Add a rectangular stalk below with slightly curved sides","Place 2–3 white oval spots on the cap","Scatter at varied sizes; add tiny grass blades at the base"],
+   mk:[{n:"Cap red",h:"#D94040"},{n:"Stalk cream",h:"#F5EBD8"},{n:"Spot white",h:"#FFFFFF"},{n:"Grass green",h:"#5A8C5A"}]},
+  {id:26,name:"Raindrop scatter",cat:"novelty",use:["background","clothing"],
+   pq:"raindrop pattern blue water drop",gq:["raindrop pattern blue","water drop fabric","rain drop print","teardrop pattern blue"],
+   s:{pi:"raindrop pattern coloring book",ig:"raindroppattern coloringbook",yt:"raindrop pattern coloring tutorial",go:"raindrop teardrop coloring"},
+   steps:["Draw a teardrop shape: circle bottom, pointed top","Scatter at random angles across the surface","Use 2–3 blues from light to deep","Add a tiny horizontal highlight line inside each drop"],
+   mk:[{n:"Rain deep",h:"#4A80C0"},{n:"Rain mid",h:"#7AB0E0"},{n:"Rain light",h:"#B8D8F8"},{n:"Highlight",h:"#DCEEFF"}]},
+  {id:27,name:"Tiny hearts",cat:"novelty",use:["background","clothing","filler"],
+   pq:"heart pattern pink love seamless fabric",gq:["heart pattern pink","love heart repeat","cute heart pastel","heart print textile"],
+   s:{pi:"heart pattern coloring book cute",ig:"heartpattern coloringbook",yt:"heart pattern coloring tutorial",go:"heart print pattern coloring"},
+   steps:["Draw two small circles side by side","Extend the bottom into a V point","Vary sizes: large hearts surrounded by tiny ones","Scatter at different angles for a playful feel"],
+   mk:[{n:"Heart coral",h:"#E8542E"},{n:"Heart pink",h:"#F2998A"},{n:"Heart lavender",h:"#A89BC4"},{n:"Bg cream",h:"#FEF8F5"}]},
+  {id:28,name:"Cloud and sun",cat:"novelty",use:["background","clothing"],
+   pq:"cloud sun pattern kawaii cute pastel",gq:["cloud pattern kawaii","sun cloud fabric","cute weather pattern","cloud print pastel"],
+   s:{pi:"cloud sun pattern coloring book",ig:"cloudpattern coloringbook",yt:"cloud sun coloring tutorial",go:"cloud sun kawaii coloring"},
+   steps:["Draw a sun: circle with short radiating lines","Draw a cloud: overlapping bumpy circles","Scatter at varied scales — big sun, smaller cloud beside","Add tiny stars between elements for a dreamy feel"],
+   mk:[{n:"Sun yellow",h:"#F5C030"},{n:"Cloud white",h:"#F8F8F8"},{n:"Sky blue",h:"#C0DEFF"},{n:"Sun orange",h:"#F09030"}]},
+  {id:29,name:"Smiley faces",cat:"novelty",use:["filler","clothing"],
+   pq:"smiley face pattern yellow fun fabric",gq:["smiley face yellow pattern","happy face fabric","emoji pattern print","smile face yellow"],
+   s:{pi:"smiley face pattern coloring book",ig:"smileypattern coloringbook",yt:"smiley face coloring tutorial",go:"smiley face pattern coloring"},
+   steps:["Draw a circle for the face","Add two small filled circles for eyes","Draw a curved arc for the smile","Add rosy cheek circles in blush for extra cuteness"],
+   mk:[{n:"Face yellow",h:"#F5D060"},{n:"Eyes navy",h:"#1A2238"},{n:"Cheeks pink",h:"#F2A0A0"},{n:"Outline",h:"#3A3450"}]},
+  {id:30,name:"Half-drop circles",cat:"geometric",use:["background","clothing"],
+   pq:"circle pattern colorful seamless pastel",gq:["circle repeat colorful","large polka dot offset","bubble pattern fabric","circle grid colorful"],
+   s:{pi:"circle drop pattern coloring book",ig:"circlepattern coloringbook",yt:"circle pattern coloring tutorial",go:"half drop circle pattern coloring"},
+   steps:["Draw circles in a regular grid","Offset every other column downward by half the circle height","Allow circles to gently touch or slightly overlap","Use two tones within each circle for depth"],
+   mk:[{n:"Circle A",h:"#F2998A"},{n:"Circle B",h:"#A89BC4"},{n:"Circle C",h:"#E8C030"},{n:"Bg",h:"#FAF3E7"}]},
+];
+
+let fCat='all', fUse='all';
+
+function setF(d,v,el){
+  if(d==='cat'){fCat=v;document.querySelectorAll('.f-chip[data-d="cat"]').forEach(c=>c.classList.remove('on'));}
+  else{fUse=v;document.querySelectorAll('.f-chip[data-d="use"]').forEach(c=>c.classList.remove('on'));}
+  el.classList.add('on'); render();
+}
+
+async function render(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase().trim();
+  const grid=document.getElementById('grid'), empty=document.getElementById('empty');
+  const m=P.filter(p=>(fCat==='all'||p.cat===fCat)&&(fUse==='all'||p.use.includes(fUse))&&(!q||p.name.toLowerCase().includes(q)||p.cat.includes(q)||p.use.join(' ').includes(q)));
+  document.getElementById('count').textContent=m.length;
+  grid.innerHTML='';
+  if(!m.length){grid.style.display='none';empty.classList.add('show');return;}
+  grid.style.display='grid'; empty.classList.remove('show');
+
+  m.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='p-card'; card.onclick=()=>openDrawer(p);
+    card.innerHTML=`
+      <div class="p-img-wrap" id="wrap-${p.id}">
+        <div class="p-skeleton"></div>
+        <div class="p-fallback" id="fb-${p.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>${p.name}</span>
+        </div>
+        <div class="p-tags"><span class="p-tag">${p.cat}</span><span class="p-tag u">${p.use[0]}</span></div>
+      </div>
+      <div class="p-info"><div class="p-name">${p.name}</div><div class="p-meta">${p.use.join(' · ')}</div></div>`;
+    grid.appendChild(card);
+
+    // Fetch image asynchronously after card is in DOM
+    pexels(p.pq, 1).then(photos=>{
+      const wrap=document.getElementById('wrap-'+p.id);
+      if(!wrap) return;
+      if(photos && photos.length > 0){
+        const photo=photos[0];
+        const img=document.createElement('img');
+        img.className='p-img';
+        img.src=photo.src.medium;
+        img.alt=p.name;
+        img.onload=()=>img.classList.add('ready');
+        img.onerror=()=>{ img.remove(); document.getElementById('fb-'+p.id)?.classList.add('show'); };
+        // Remove skeleton, add image
+        wrap.querySelector('.p-skeleton')?.remove();
+        wrap.insertBefore(img, wrap.querySelector('.p-tags'));
+        if(photo.photographer){
+          const credit=document.createElement('span');
+          credit.className='p-photo-credit';
+          credit.textContent='📷 '+photo.photographer;
+          wrap.appendChild(credit);
+        }
+      } else {
+        wrap.querySelector('.p-skeleton')?.remove();
+        document.getElementById('fb-${p.id}')?.classList.add('show');
+      }
+    });
+  });
+}
+
+async function openDrawer(p){
+  // Gallery: 4 images from varied queries
+  const gallery=document.getElementById('dgallery');
+  gallery.innerHTML=p.gq.map((_,i)=>`<div class="dgallery-cell" id="gc-${p.id}-${i}"><div class="dskel"></div></div>`).join('');
+
+  p.gq.forEach(async (q,i)=>{
+    const photos=await pexels(q,3,1);
+    const cell=document.getElementById(`gc-${p.id}-${i}`);
+    if(!cell) return;
+    // pick a different photo for variety
+    const photo=photos[i % Math.max(photos.length,1)];
+    if(photo){
+      const img=document.createElement('img');
+      img.src=photo.src.small;
+      img.alt=q;
+      img.onload=()=>img.classList.add('ready');
+      img.onerror=()=>img.remove();
+      cell.querySelector('.dskel')?.remove();
+      cell.appendChild(img);
+      if(photo.photographer){
+        const cr=document.createElement('span');
+        cr.className='dgallery-credit';
+        cr.textContent=photo.photographer;
+        cell.appendChild(cr);
+      }
+    }
+  });
+
+  // Search links
+  document.getElementById('dslinks').innerHTML=
+    `<a class="slink pi" href="https://pinterest.com/search/pins/?q=${encodeURIComponent(p.s.pi)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+      <div><div class="slink-name">Pinterest</div><div class="slink-sub">Real examples</div></div></a>
+     <a class="slink ig" href="https://www.instagram.com/explore/tags/${encodeURIComponent(p.s.ig.replace(/ /g,''))}/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      <div><div class="slink-name">Instagram</div><div class="slink-sub">Browse hashtag</div></div></a>
+     <a class="slink yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.s.yt)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+      <div><div class="slink-name">YouTube</div><div class="slink-sub">Watch tutorials</div></div></a>
+     <a class="slink go" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(p.s.go)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <div><div class="slink-name">Google Images</div><div class="slink-sub">More inspiration</div></div></a>`;
+
+  document.getElementById('dname').textContent=p.name;
+  document.getElementById('dbadges').innerHTML=`<span class="dbadge c">${p.cat}</span>`+p.use.map(u=>`<span class="dbadge u">${u}</span>`).join('');
+  document.getElementById('dsteps').innerHTML=p.steps.map((s,i)=>`<div class="step"><div class="stepn">${i+1}</div><div class="stept">${s}</div></div>`).join('');
+  document.getElementById('dmarkers').innerHTML=p.mk.map(m=>`<div class="mchip"><div class="mdot" style="background:${m.h}"></div><div><div class="mname">${m.n}</div><div class="mhex">${m.h}</div></div></div>`).join('');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function maybeClose(e){if(e.target===document.getElementById('overlay'))document.getElementById('overlay').classList.remove('open');}
+function openAI(){document.getElementById('aimodal').classList.add('open');}
+function closeAI(){
+  document.getElementById('aimodal').classList.remove('open');
+  document.getElementById('aiout').style.display='none';
+  document.getElementById('aiout').innerHTML='';
+  document.getElementById('ldr').style.display='none';
+  document.getElementById('aiprompt').value='';
+  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('on'));
+}
+function pick(el,gid){document.querySelectorAll(`#${gid} .mc`).forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+document.getElementById('aimodal').addEventListener('click',e=>{if(e.target===document.getElementById('aimodal'))closeAI();});
+document.getElementById('overlay').addEventListener('click',maybeClose);
+
+async function runAI(){
+  const prompt=document.getElementById('aiprompt').value.trim();
+  if(!prompt){document.getElementById('aiprompt').focus();return;}
+  const cat=document.querySelector('#aicat .mc.on')?.textContent||'any';
+  const use=document.querySelector('#aiuse .mc.on')?.textContent||'any';
+  document.getElementById('ldr').style.display='flex';
+  document.getElementById('aiout').style.display='none';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,messages:[{role:'user',content:`You are a coloring book art specialist. Generate a pattern suggestion.\n\nPattern: "${prompt}"\nCategory: ${cat} | Use: ${use}\n\nRespond with:\n\n**Pattern name** (3 words max)\n\n**How to draw it — 4 steps**\nSpecific marker-friendly instructions for cozy illustrated coloring books.\n\n**Marker colors — 4 suggestions**\nFormat: Color name — #HEXCODE\nUse soft cozy colors.\n\n**Search terms to find real examples**\n- Pinterest: [phrase]\n- Instagram hashtag: [oneword]\n- YouTube: [phrase]`}]})});
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    document.getElementById('aiout').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    document.getElementById('aiout').style.display='block';
+  }catch(e){
+    document.getElementById('aiout').innerHTML='Something went wrong — please try again.';
+    document.getElementById('aiout').style.display='block';
+  }
+  document.getElementById('ldr').style.display='none';
+}
+
+render();
+
+/* ══════════ MODULE 01: INSPIRATION GALLERY ══════════ */
+let galMode = 'describe';
+let galUploadedImageBase64 = null;
+
+function populateGalBookSelect(){
+  const sel = document.getElementById('gal-book');
+  if(!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = myBooks.map(b=>`<option value="${b}">${b}</option>`).join('');
+  if(myBooks.includes(prev)) sel.value = prev;
+}
+
+function setGalMode(mode, el){
+  galMode = mode;
+  document.querySelectorAll('.gal-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('gal-describe-panel').style.display = mode==='describe' ? 'block' : 'none';
+  document.getElementById('gal-upload-panel').style.display = mode==='upload' ? 'block' : 'none';
+}
+
+function handleGalUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(ev){
+    const dataUrl = ev.target.result;
+    galUploadedImageBase64 = dataUrl.split(',')[1];
+    const mediaType = file.type;
+    document.getElementById('gal-preview-wrap').innerHTML =
+      `<div class="gal-preview-wrap"><img class="gal-preview-img" src="${dataUrl}"><span class="gal-preview-remove" onclick="clearGalUpload()">Remove</span></div>`;
+    document.getElementById('gal-analyzing').style.display = 'flex';
+    document.getElementById('gal-scene-upload').value = '';
+    try{
+      const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:200,
+        messages:[{role:'user',content:[
+          {type:'image', source:{type:'base64', media_type: mediaType, data: galUploadedImageBase64}},
+          {type:'text', text:'This is a photo of a page from a coloring book. In one short sentence, describe the scene depicted (what it shows) so the description can be used as a search query. Do not mention that it is a coloring page, or whether it is colored or uncolored — just describe the scene itself.'}
+        ]}]
+      })});
+      const data = await res.json();
+      const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ').trim();
+      document.getElementById('gal-scene-upload').value = text;
+    }catch(err){
+      document.getElementById('gal-scene-upload').placeholder = "Couldn't analyze the photo automatically — describe the scene yourself";
+    }
+    document.getElementById('gal-analyzing').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearGalUpload(){
+  galUploadedImageBase64 = null;
+  document.getElementById('gal-preview-wrap').innerHTML = '';
+  document.getElementById('gal-file').value = '';
+  document.getElementById('gal-scene-upload').value = '';
+}
+
+function slinkIcon(cls){
+  const icons = {
+    pi:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>',
+    ig:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
+    yt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>',
+    go:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>',
+  };
+  return icons[cls]||'';
+}
+
+async function findReferences(){
+  const book = document.getElementById('gal-book').value;
+  const scene = (galMode==='describe' ? document.getElementById('gal-scene').value : document.getElementById('gal-scene-upload').value).trim();
+  const results = document.getElementById('gal-results');
+  if(!scene){
+    results.innerHTML = `<div class="gal-results-empty">Add a short description of the scene first — even a few words helps.</div>`;
+    return;
+  }
+  results.innerHTML = `<div class="gal-results-empty"><div class="spinner" style="margin:0 auto 10px"></div>Searching…</div>`;
+
+  const searchQ = `${book} ${scene}`;
+  const links = [
+    {cls:'pi', label:'Pinterest', sub:'Real examples', href:`https://pinterest.com/search/pins/?q=${encodeURIComponent(searchQ+' coloring page')}`},
+    {cls:'ig', label:'Instagram', sub:'Browse hashtag', href:`https://www.instagram.com/explore/tags/${encodeURIComponent((book+scene).replace(/[^a-zA-Z0-9]/g,'').toLowerCase())}/`},
+    {cls:'yt', label:'YouTube', sub:'Watch tutorials', href:`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ+' coloring tutorial')}`},
+    {cls:'go', label:'Google Images', sub:'More inspiration', href:`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(searchQ+' coloring page')}`},
+  ];
+
+  const photos = await pexels(scene, 8);
+
+  results.innerHTML = `
+    <div class="section-label">References for this page</div>
+    <div class="gal-confidence">Real matches for a specific book page aren't reliably searchable — Pexels and web search don't index by page number. These search links open real artist posts on Pinterest and Instagram tagged with your book and scene, which is how other creators actually find page-specific inspiration.</div>
+    <div class="dslinks-grid" id="gal-links"></div>
+    <div class="section-label" style="margin-top:26px">${photos.length ? 'Loose visual mood matches' : 'No visual matches found'}</div>
+    <div class="gal-confidence">${photos.length ? "These are general stock photos that loosely match your scene's mood and subject — not verified pages from your book." : "No stock photos matched this description closely enough to show. Try the search links above, or rephrase your description."}</div>
+    <div class="insp-grid" id="gal-mood-grid"></div>
+  `;
+
+  document.getElementById('gal-links').innerHTML = links.map(l=>`
+    <a class="slink ${l.cls}" href="${l.href}" target="_blank" rel="noopener">
+      ${slinkIcon(l.cls)}
+      <div><div class="slink-name">${l.label}</div><div class="slink-sub">${l.sub}</div></div>
+    </a>`).join('');
+
+  document.getElementById('gal-mood-grid').innerHTML = photos.map(p=>`
+    <div class="insp-tile">
+      <div class="insp-tile-img">
+        <img class="insp-img" src="${p.src.medium}" alt="${scene}" onload="this.classList.add('ready')">
+        <span class="insp-tag">Loose match</span>
+      </div>
+      <div class="insp-tile-label">📷 ${p.photographer||'Pexels'}</div>
+    </div>`).join('');
+}
+
+populateGalBookSelect();
+
+/* ══════════ MODULE 05: TREND PULSE ══════════ */
+let TRENDS = {
+  updated: 'Curated brief · refresh for today',
+  coloring: {
+    highlight: {
+      title: "Today's palette is leaning warm",
+      note: "Terracotta and sage pairings are trending across cozy illustrated pages this week.",
+      swatches: ["#E8542E","#9FC2A8","#E6C77A","#1A2238"]
+    },
+    palettes: [
+      {name:"Warm terracotta", note:"Earthy oranges grounded with deep navy — strong on cozy interior pages.", swatches:["#C4603A","#E8926A","#F2C4A0","#9FC2A8","#1A2238"]},
+      {name:"Soft pastel morning", note:"Muted pinks and lavenders for dreamy, low-contrast looks.", swatches:["#F7C5C5","#EDEAF5","#C9C0DE","#A8C8E0","#8A8098"]},
+      {name:"Autumn library", note:"Ambers and forest greens — pairs well with book and café scenes.", swatches:["#E6C77A","#D4A53A","#8B5E4A","#1F4A2E","#3A3450"]}
+    ],
+    themes: [
+      {name:"Cozy café scenes", note:"Coffee shops, pastries, window seats", q:"cozy cafe illustration aesthetic"},
+      {name:"Greenhouse & plants", note:"Plant shelves, watering cans, glasshouses", q:"greenhouse plants cozy illustration"},
+      {name:"Rainy day windows", note:"Rain on glass, warm light inside", q:"rainy window cozy aesthetic"},
+      {name:"Autumn markets", note:"Pumpkins, stalls, string lights", q:"autumn market cozy aesthetic"}
+    ],
+    formats: [
+      {name:"Real-time process reels", note:"30–60s single-section colorings with ambient audio are out-performing time-lapses right now."},
+      {name:"Before / after page flips", note:"A quick flip from blank page to finished spread — strong saves and shares."},
+      {name:"Marker swatch matching", note:"Showing the exact markers picked for a page before starting — high comment engagement."}
+    ]
+  },
+  embroidery: { highlight: {title:"Monthly calendar season", note:"Paper embroidery calendars with seasonal florals are having a moment this month."} },
+  lego:       { highlight: {title:"Botanical sets are buzzing", note:"Build-and-display content for botanical and architecture sets is getting strong engagement."} },
+  fiction:    { highlight: {title:"Cozy fantasy still dominates", note:"BookTok continues to favor cozy fantasy and romantasy releases this season."} }
+};
+
+function renderHomeMoodboard(){
+  ['coloring','embroidery','lego','fiction'].forEach(h=>{
+    const hl = TRENDS[h]?.highlight; if(!hl) return;
+    const t = document.getElementById('mood-title-'+h);
+    const n = document.getElementById('mood-trend-'+h);
+    if(t) t.textContent = hl.title;
+    if(n) n.textContent = hl.note;
+  });
+  const sw = document.getElementById('mood-swatches-coloring');
+  if(sw && TRENDS.coloring.highlight.swatches){
+    sw.innerHTML = TRENDS.coloring.highlight.swatches.map(c=>`<div class="mini-swatch" style="background:${c}"></div>`).join('');
+  }
+}
+
+function renderTrends(){
+  document.getElementById('trend-updated-label').textContent = TRENDS.updated;
+
+  document.getElementById('trend-palettes').innerHTML = TRENDS.coloring.palettes.map(p=>`
+    <div class="palette-card">
+      <div class="palette-name">${p.name}</div>
+      <div class="palette-note">${p.note}</div>
+      <div class="swatch-row">${p.swatches.map(c=>`<div class="swatch" style="background:${c}" title="${c}" onclick="navigator.clipboard?.writeText('${c}')"><span>${c}</span></div>`).join('')}</div>
+    </div>`).join('');
+
+  const themesEl = document.getElementById('trend-themes');
+  themesEl.innerHTML = TRENDS.coloring.themes.map((t,i)=>`
+    <a class="insp-tile" href="https://pinterest.com/search/pins/?q=${encodeURIComponent(t.q+' coloring')}" target="_blank" rel="noopener">
+      <div class="insp-tile-img" id="trend-theme-img-${i}"><div class="p-skeleton"></div></div>
+      <div class="insp-tile-label"><strong style="color:var(--navy);font-weight:500">${t.name}</strong><br>${t.note}</div>
+    </a>`).join('');
+  TRENDS.coloring.themes.forEach(async (t,i)=>{
+    const photos = await pexels(t.q, 1);
+    const cell = document.getElementById('trend-theme-img-'+i);
+    if(!cell) return;
+    cell.querySelector('.p-skeleton')?.remove();
+    if(photos.length){
+      cell.innerHTML = `<img class="insp-img" src="${photos[0].src.medium}" alt="${t.name}" onload="this.classList.add('ready')"><span class="insp-tag">Trending</span>`;
+    }
+  });
+
+  document.getElementById('trend-formats').innerHTML = TRENDS.coloring.formats.map(f=>`
+    <div class="trend-format">
+      <div class="trend-format-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><strong>${f.name}</strong><p>${f.note}</p></div>
+    </div>`).join('');
+}
+
+async function refreshTrends(){
+  const btn = document.getElementById('trend-refresh-btn');
+  btn.classList.add('loading');
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:1200,
+      messages:[{role:'user',content:`You are a trend researcher for a cozy coloring-book content creator on Instagram and YouTube (alcohol markers, Cocowyo books). Today is ${TODAY}. Generate a fresh trend brief as STRICT JSON only, no prose, matching exactly this shape:
+{"highlight":{"title":"...","note":"...","swatches":["#hex","#hex","#hex","#hex"]},
+"palettes":[{"name":"...","note":"...","swatches":["#hex","#hex","#hex","#hex","#hex"]} x3],
+"themes":[{"name":"...","note":"...","q":"pexels search phrase"} x4],
+"formats":[{"name":"...","note":"..."} x3],
+"embroidery":{"title":"...","note":"..."},"lego":{"title":"...","note":"..."},"fiction":{"title":"...","note":"..."}}
+Soft cozy colors only. Notes under 20 words. Plausible current trends for this niche.`}]
+    })});
+    const data = await res.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}')+1));
+    TRENDS.coloring.highlight = j.highlight;
+    TRENDS.coloring.palettes = j.palettes;
+    TRENDS.coloring.themes = j.themes;
+    TRENDS.coloring.formats = j.formats;
+    TRENDS.embroidery.highlight = j.embroidery ? {title:j.embroidery.title, note:j.embroidery.note} : TRENDS.embroidery.highlight;
+    TRENDS.lego.highlight = j.lego ? {title:j.lego.title, note:j.lego.note} : TRENDS.lego.highlight;
+    TRENDS.fiction.highlight = j.fiction ? {title:j.fiction.title, note:j.fiction.note} : TRENDS.fiction.highlight;
+    TRENDS.updated = 'AI brief · generated ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    renderTrends(); renderHomeMoodboard();
+  }catch(e){
+    document.getElementById('trend-updated-label').textContent = "Couldn't reach the AI right now — showing the curated brief.";
+  }
+  btn.classList.remove('loading');
+}
+
+renderTrends();
+renderHomeMoodboard();
+
+/* ══════════ MODULE 03: CONTENT IDEAS ══════════ */
+let ideasHobby = 'coloring';
+let ideasUpdated = 'Curated angles · refresh for today';
+
+let IDEAS = {
+  coloring: [
+    {title:"Color one corner with me", format:"Reel",
+     note:"Pick a single section of a Cocowyo page and color it start-to-finish in real time with ambient audio — no cuts, no voiceover.",
+     signal:"Real-time process reels are out-performing time-lapses right now"},
+    {title:"The page flip nobody skips", format:"Reel",
+     note:"Three-second hold on the blank spread, then flip to the finished page. End on a slow zoom into your favorite detail.",
+     signal:"Before / after page flips are pulling strong saves and shares"},
+    {title:"Which markers made the cut", format:"Post",
+     note:"Flat lay of the exact markers used beside the finished page, with the color names visible. Ask which palette to use next.",
+     signal:"Marker swatch matching posts are getting high comment engagement"},
+    {title:"Terracotta season on my desk", format:"Reel",
+     note:"Color a cozy interior page entirely in the trending warm palette — call out the terracotta + sage pairing in the caption.",
+     signal:"Terracotta and sage pairings are trending across cozy illustrated pages"},
+    {title:"“Too many coloring books” shelf tour", format:"Reel",
+     note:"A relatable shelf pan of every book you own with an honest count on screen — ends on the one you actually reach for.",
+     signal:"Relatable collection-overflow bits are a recurring high-reach format in the coloring community"}
+  ],
+  embroidery: [
+    {title:"This month's calendar, stitch by stitch", format:"Reel",
+     note:"Stitch this month's calendar page in short bursts — one date block per clip, stitched paper texture close-ups between.",
+     signal:"Paper embroidery calendars with seasonal florals are having a moment this month"},
+    {title:"Thread haul, honest edition", format:"Reel",
+     note:"Unpack new floss colors and say which project each one is actually for — hauls land better with a plan attached.",
+     signal:"Craft hauls with a stated project plan are performing across embroidery feeds"},
+    {title:"Why paper instead of fabric", format:"Post",
+     note:"A carousel explaining what paper embroidery gives you that fabric doesn't, using your calendar pages as proof.",
+     signal:"Technique-explainer carousels are resonating with the seasonal-floral calendar trend"}
+  ],
+  lego: [
+    {title:"Botanical build in real time", format:"Reel",
+     note:"One flower assembly from sorting to stem, hands-in-frame, natural sound. Save the full arrangement for the last frame.",
+     signal:"Botanical and architecture set content is getting strong engagement"},
+    {title:"Unboxing without the fluff", format:"Video",
+     note:"Skip the box-tapping intro — open on the parts spread and give one honest first impression per bag.",
+     signal:"Unboxing formats are performing when they cut straight to the parts"},
+    {title:"Shelf tour: the builds that stayed", format:"Reel",
+     note:"Pan across your display shelf and caption why each set earned its spot — invite followers to defend their own picks.",
+     signal:"Build-and-display content is the strongest current Lego signal"}
+  ],
+  fiction: [
+    {title:"July TBR in 30 seconds", format:"Reel",
+     note:"Stack your to-be-read pile one book at a time with a one-line hook each — end on the one you'll start tonight.",
+     signal:"TBR videos are one of the formats resonating right now on BookTok"},
+    {title:"Cozy fantasy starter pack", format:"Post",
+     note:"A carousel of 4-5 cozy fantasy picks for someone who's never read the genre, ordered from gentlest to most epic.",
+     signal:"BookTok continues to favor cozy fantasy and romantasy this season"},
+    {title:"Monthly wrap-up, no spoilers", format:"Video",
+     note:"Rate the month's reads with a strict no-spoiler rule — the constraint itself is the hook.",
+     signal:"Reading wrap-ups are among the formats currently resonating"}
+  ]
+};
+
+function setIdeasHobby(h){
+  ideasHobby = h;
+  document.querySelectorAll('.ih-chip').forEach(c=>c.classList.toggle('on', c.dataset.hobby===h));
+  renderIdeas();
+}
+
+function renderIdeas(){
+  document.getElementById('ideas-updated-label').textContent = ideasUpdated;
+  document.getElementById('ideas-list').innerHTML = (IDEAS[ideasHobby]||[]).map(i=>`
+    <div class="idea-card">
+      <div class="idea-top">
+        <div class="idea-title">${i.title}</div>
+        <span class="idea-format">${i.format}</span>
+      </div>
+      <div class="idea-note">${i.note}</div>
+      <div class="idea-signal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Tied to: ${i.signal}</span>
+      </div>
+    </div>`).join('');
+}
+
+async function refreshIdeas(){
+  const btn = document.getElementById('ideas-refresh-btn');
+  btn.classList.add('loading');
+  const hl = TRENDS[ideasHobby]?.highlight || {};
+  const signalContext = ideasHobby==='coloring'
+    ? `Highlight: ${hl.title} — ${hl.note} Formats peaking: ${TRENDS.coloring.formats.map(f=>f.name+' ('+f.note+')').join('; ')}`
+    : `Highlight: ${hl.title} — ${hl.note}`;
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:900,
+      messages:[{role:'user',content:`You generate content ideas for a cozy multi-hobby creator on Instagram and YouTube. Hobby: ${ideasHobby}. Today is ${TODAY}.
+Current trend signals for this hobby: ${signalContext}
+Rules: every idea MUST tie to a specific current trend signal (use the signals above or closely related ones) — no generic advice. Relatable, warm, low-production angles.
+Respond with STRICT JSON only, no prose: {"ideas":[{"title":"...","note":"one actionable sentence describing exactly what to film or post","signal":"the specific trend signal this ties to","format":"Reel|Post|Video"} x4]}`}]
+    })});
+    const data = await res.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}')+1));
+    if(Array.isArray(j.ideas) && j.ideas.length){
+      IDEAS[ideasHobby] = j.ideas;
+      ideasUpdated = 'AI angles for ' + ideasHobby + ' · ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      renderIdeas();
+    }
+  }catch(e){
+    document.getElementById('ideas-updated-label').textContent = "Couldn't reach the AI right now — showing curated angles.";
+  }
+  btn.classList.remove('loading');
+}
+
+renderIdeas();
+
+/* ══════════ MODULE 04: TUTORIALS ══════════ */
+let tutMedium = 'Alcohol markers';
+let tutSkill = 'blending';
+
+const TUT_SKILLS = {
+  blending: {
+    label:'Blending & shading',
+    tips:[
+      "Work light to dark and keep the lighter color wet at the seam — going back over a dried edge is what causes streaks.",
+      "Pick your light source before the first stroke and mark it with a tiny pencil arrow in the margin."
+    ],
+    tracks:[
+      {t:'Smooth two-color blends', note:'The core seamless gradient — the skill everything else builds on.', lvl:'b', q:'{m} blending tutorial beginner smooth gradient'},
+      {t:'Shading with a light source', note:'Deciding where shadows fall so objects stop looking flat.', lvl:'b', q:'{m} shading light source tutorial coloring book'},
+      {t:'Skin and soft surfaces', note:'Gentle transitions for faces, hands, and fabric folds.', lvl:'i', q:'{m} skin tone blending tutorial'},
+      {t:'Dark-to-light layering', note:'Building depth in shadowed corners without muddying the color.', lvl:'a', q:'{m} advanced layering shadows tutorial'}
+    ]
+  },
+  color: {
+    label:'Color theory',
+    tips:[
+      "Limit a page to three color families plus one accent — cozy pages die from too many competing hues, not too few.",
+      "Test your palette on a scrap corner first: colors that clash will clash immediately, before you've committed the page."
+    ],
+    tracks:[
+      {t:'Choosing a page palette', note:'How to pick 4-6 colors that hold together before you start.', lvl:'b', q:'{m} color palette choosing coloring book tutorial'},
+      {t:'Warm vs cool balance', note:'Using temperature to make focal points pop.', lvl:'i', q:'warm cool color theory {m} coloring'},
+      {t:'Complementary shadows', note:'Shading with the opposite hue instead of grey or black.', lvl:'i', q:'complementary color shadows {m} tutorial'},
+      {t:'Limited palette challenges', note:'Full pages from 3-4 colors — great practice and great content.', lvl:'a', q:'limited palette {m} coloring challenge'}
+    ]
+  },
+  effects: {
+    label:'Effects',
+    tips:[
+      "Shine is about what you leave uncolored — reserve the highlight from the start rather than adding white on top.",
+      "For texture, vary your stroke direction with the surface: vertical for wood grain, tight circles for fluff, straight pulls for metal."
+    ],
+    tracks:[
+      {t:'Glass and transparency', note:'Windows, jars, and glasshouse panes that actually read as glass.', lvl:'i', q:'{m} glass transparency effect tutorial'},
+      {t:'Glow and light effects', note:'Lamps, candles, fairy lights — warm light on a cozy page.', lvl:'i', q:'{m} glow light effect coloring tutorial'},
+      {t:'Texture: wood, knit, fur', note:'Stroke techniques that turn flat fills into surfaces.', lvl:'i', q:'{m} texture technique wood fur tutorial'},
+      {t:'Shine and metallics', note:'Highlights that make ceramic, metal, and water gleam.', lvl:'a', q:'{m} shine metallic highlight tutorial'}
+    ]
+  },
+  backgrounds: {
+    label:'Backgrounds & patterns',
+    tips:[
+      "A background only needs to be 20% as detailed as the foreground — its job is contrast, not competition.",
+      "Steal from your pattern bank: a simple repeating fill behind the subject reads as intentional design, not empty space."
+    ],
+    tracks:[
+      {t:'Simple gradient skies', note:'The fastest way to finish a page background that looks deliberate.', lvl:'b', q:'{m} gradient sky background coloring tutorial'},
+      {t:'Pattern fills behind subjects', note:'Using repeating patterns as backgrounds without stealing focus.', lvl:'i', q:'{m} pattern background coloring book tutorial'},
+      {t:'Bokeh and soft depth', note:'Blurred dots and soft shapes that push the background back.', lvl:'i', q:'{m} bokeh background effect coloring'},
+      {t:'Full scene backgrounds', note:'Committing to a complete environment behind the line art.', lvl:'a', q:'{m} full background scene coloring tutorial'}
+    ]
+  }
+};
+
+function setTutMode(mode, el){
+  document.querySelectorAll('#pg-tutorials .gal-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tut-browse-panel').style.display = mode==='browse' ? 'block' : 'none';
+  document.getElementById('tut-wip-panel').style.display = mode==='wip' ? 'block' : 'none';
+}
+function setTutMedium(m, el){
+  tutMedium = m;
+  document.querySelectorAll('#tut-medium-row .f-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderTutorials();
+}
+function setTutSkill(s, el){
+  tutSkill = s;
+  document.querySelectorAll('#tut-skill-row .f-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderTutorials();
+}
+
+function ytLink(q){ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
+const TUT_LVL = {b:['b','Beginner'], i:['i','Intermediate'], a:['a','Advanced']};
+
+function renderTutorials(){
+  const sk = TUT_SKILLS[tutSkill];
+  document.getElementById('tut-tips').innerHTML =
+    `<div class="tut-tips-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>Instant tips — no video needed</div>`
+    + sk.tips.map(t=>`<div class="tut-tip">${t}</div>`).join('');
+  document.getElementById('tut-tracks').innerHTML = sk.tracks.map(tr=>{
+    const [cls,lbl] = TUT_LVL[tr.lvl];
+    const q = tr.q.replace('{m}', tutMedium.toLowerCase());
+    return `<div class="tut-track">
+      <div class="tut-track-body">
+        <div class="tut-track-top"><span class="tut-track-title">${tr.t}</span><span class="tut-lvl ${cls}">${lbl}</span></div>
+        <div class="tut-track-note">${tr.note}</div>
+      </div>
+      <a class="tut-yt" href="${ytLink(q)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        Watch
+      </a>
+    </div>`;
+  }).join('');
+}
+
+function wipFallbackResults(text){
+  const queries = [
+    {t:'Direct match', q:text+' tutorial'},
+    {t:'Technique focus', q:'how to '+text},
+    {t:'With your medium', q:tutMedium.toLowerCase()+' '+text+' technique'}
+  ];
+  return `
+    <div class="gal-confidence">Couldn't reach the AI for matched tips right now — but these searches are built straight from your description and will surface real tutorials.</div>
+    ${queries.map(x=>`<div class="tut-track">
+      <div class="tut-track-body">
+        <div class="tut-track-top"><span class="tut-track-title">${x.t}</span></div>
+        <div class="tut-track-note">${x.q}</div>
+      </div>
+      <a class="tut-yt" href="${ytLink(x.q)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        Watch
+      </a>
+    </div>`).join('')}`;
+}
+
+async function matchWip(){
+  const text = document.getElementById('tut-wip-text').value.trim();
+  const out = document.getElementById('tut-wip-results');
+  if(!text){ out.innerHTML = `<div class="gal-results-empty">Describe what you're working on first — a sentence is plenty.</div>`; return; }
+  out.innerHTML = `<div class="gal-results-empty"><div class="spinner" style="margin:0 auto 10px"></div>Matching…</div>`;
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:600,
+      messages:[{role:'user',content:`A coloring-book artist describes their work-in-progress and technique problem: "${text}"
+Respond with STRICT JSON only: {"tips":["instant actionable tip 1","instant actionable tip 2"],"queries":[{"t":"short card title","q":"specific youtube search phrase"} x3]}
+Tips must be immediately usable without watching anything. Queries must target the exact technique problem. Do not invent video titles or creators — these are search phrases.`}]
+    })});
+    const data = await res.json();
+    const rtext = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const j = JSON.parse(rtext.slice(rtext.indexOf('{'), rtext.lastIndexOf('}')+1));
+    out.innerHTML = `
+      <div class="tut-tips"><div class="tut-tips-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>Try this right now</div>
+      ${j.tips.map(t=>`<div class="tut-tip">${t}</div>`).join('')}</div>
+      <div class="section-label">Matched tutorial searches</div>
+      ${j.queries.map(x=>`<div class="tut-track">
+        <div class="tut-track-body">
+          <div class="tut-track-top"><span class="tut-track-title">${x.t}</span></div>
+          <div class="tut-track-note">${x.q}</div>
+        </div>
+        <a class="tut-yt" href="${ytLink(x.q)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          Watch
+        </a>
+      </div>`).join('')}`;
+  }catch(e){
+    out.innerHTML = wipFallbackResults(text);
+  }
+}
+
+renderTutorials();
+
+goPage('home');
+</script>
+</body>
+</html>

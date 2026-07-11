@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pattern Bank — Cozy Create Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF3E7;--cream-deep:#F3E9D8;--blush:#F5E6E0;
+  --coral:#E8542E;--coral-soft:#FBE2DA;
+  --lavender:#A89BC4;--lavender-soft:#EDEAF5;
+  --navy:#1A2238;--forest:#1F4A2E;
+  --card:#FFFFFF;--card-warm:#FEFBF6;
+  --border:#EBE3D4;--border-strong:#DCD0BB;
+  --text-body:#3A3450;--text-muted:#8A8098;--text-light:#C4BBCF;
+  --r-sm:8px;--r-md:14px;--r-lg:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--cream);font-family:'Inter',sans-serif;color:var(--text-body)}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none;color:inherit}
+a{text-decoration:none;color:inherit}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(250,243,231,0.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text-muted);padding:6px 10px;border-radius:var(--r-sm)}
+.back-btn svg{width:15px;height:15px;stroke-width:2}
+.topbar-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy)}
+.topbar-title em{font-style:italic;color:var(--coral)}
+.ai-gen-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--coral);color:#fff;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;white-space:nowrap}
+.ai-gen-btn svg{width:14px;height:14px;stroke-width:2}
+
+.filter-bar{background:var(--card-warm);border-bottom:1px solid var(--border);padding:0 16px}
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.filter-row::-webkit-scrollbar{display:none}
+.f-chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);background:var(--card);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all 0.12s}
+.f-chip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral);font-weight:500}
+.f-chip.lav.on{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.filter-divider{width:1px;background:var(--border);flex-shrink:0;margin:4px 2px}
+.flabel{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);padding:8px 4px;white-space:nowrap;align-self:center}
+
+.search-wrap{padding:12px 16px;background:var(--card-warm);position:relative}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-light);pointer-events:none}
+.search-input{width:100%;padding:10px 14px 10px 36px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--coral)}
+
+.count-bar{padding:10px 20px;font-size:12px;color:var(--text-light);display:flex;align-items:center;justify-content:space-between}
+.count-bar span{color:var(--text-muted);font-weight:500}
+
+/* grid */
+.pattern-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px 32px}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;cursor:pointer;transition:all 0.14s}
+.p-card:hover{border-color:var(--coral);box-shadow:0 2px 16px rgba(232,84,46,0.12);transform:translateY(-1px)}
+.p-img-wrap{aspect-ratio:1;position:relative;background:var(--cream-deep);overflow:hidden}
+.p-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;opacity:0}
+.p-img.ready{opacity:1}
+.p-skeleton{position:absolute;inset:0;background:linear-gradient(90deg,var(--cream-deep) 25%,var(--blush) 50%,var(--cream-deep) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.p-fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:linear-gradient(135deg,var(--cream-deep),var(--blush))}
+.p-fallback.show{display:flex}
+.p-fallback svg{width:28px;height:28px;color:var(--text-light)}
+.p-fallback span{font-size:10px;color:var(--text-light)}
+.p-tags{position:absolute;top:7px;left:7px;display:flex;gap:4px;z-index:2}
+.p-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;background:rgba(250,243,231,0.92);color:var(--navy);backdrop-filter:blur(4px)}
+.p-tag.u{background:rgba(168,155,196,0.85);color:#fff}
+.p-photo-credit{position:absolute;bottom:4px;right:6px;font-size:8px;color:rgba(255,255,255,0.7);z-index:2;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+.p-info{padding:10px 11px 12px}
+.p-name{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:2px}
+.p-meta{font-size:11px;color:var(--text-light)}
+
+/* drawer */
+.overlay{display:none;position:fixed;inset:0;background:rgba(26,34,56,0.4);z-index:200}
+.overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.drawer{background:var(--card);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:640px;max-height:92dvh;overflow-y:auto;animation:up 0.22s ease}
+@keyframes up{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.dhandle{width:36px;height:4px;background:var(--border-strong);border-radius:2px;margin:12px auto 0}
+
+.dgallery{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:12px;background:var(--border)}
+.dgallery-cell{aspect-ratio:1;position:relative;background:var(--cream-deep);overflow:hidden}
+.dgallery-cell img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s}
+.dgallery-cell img.ready{opacity:1}
+.dgallery-cell .dskel{position:absolute;inset:0;background:linear-gradient(90deg,var(--cream-deep) 25%,var(--blush) 50%,var(--cream-deep) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.dgallery-credit{position:absolute;bottom:2px;right:4px;font-size:7px;color:rgba(255,255,255,0.6);text-shadow:0 1px 2px rgba(0,0,0,0.5)}
+
+.dslinks{padding:16px 20px 0}
+.dslinks-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:10px}
+.dslinks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slink{display:flex;align-items:center;gap:8px;padding:11px 13px;border:1px solid var(--border-strong);border-radius:var(--r-sm);transition:all 0.12s;cursor:pointer}
+.slink:hover{border-color:var(--coral);background:var(--coral-soft)}
+.slink svg{width:16px;height:16px;flex-shrink:0}
+.slink-name{font-size:12.5px;font-weight:500;color:var(--navy)}
+.slink-sub{font-size:11px;color:var(--text-light);margin-top:1px}
+.slink.pi svg{color:#E60023}
+.slink.ig svg{color:#C13584}
+.slink.yt svg{color:#FF0000}
+.slink.go svg{color:#4285F4}
+
+.dbody{padding:16px 20px 8px}
+.dname{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin-bottom:6px}
+.dbadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.dbadge{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border-strong);color:var(--text-muted)}
+.dbadge.c{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.dbadge.u{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.dsec{margin-bottom:18px}
+.dsec-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:8px}
+.steps{display:flex;flex-direction:column;gap:7px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.stepn{width:20px;height:20px;border-radius:50%;background:var(--coral-soft);color:var(--coral);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.stept{font-size:13px;line-height:1.55}
+.mrow{display:flex;flex-wrap:wrap;gap:8px}
+.mchip{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card-warm)}
+.mdot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+.mname{font-size:12px;font-weight:500;color:var(--navy)}
+.mhex{font-size:10px;color:var(--text-light)}
+.close-btn{width:100%;padding:14px;font-size:13.5px;font-weight:500;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;cursor:pointer}
+
+/* ai modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(26,34,56,0.45);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal-ov.open{display:flex}
+.modal-box{background:var(--card);border-radius:var(--r-lg);padding:22px;max-width:380px;width:100%;max-height:90dvh;overflow-y:auto}
+.mtitle{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px}
+.msub{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
+.mlabel{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:5px;display:block}
+.minput{width:100%;padding:10px 12px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;margin-bottom:12px}
+.minput:focus{border-color:var(--coral)}
+.mchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.mc{padding:5px 11px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);cursor:pointer;transition:all 0.12s}
+.mc.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.mactions{display:flex;gap:8px;margin-top:16px}
+.mbtn{flex:1;padding:11px;font-size:13px;font-weight:500;border-radius:var(--r-sm);background:var(--coral);color:#fff;border:none;cursor:pointer}
+.mcancel{padding:11px 16px;font-size:13px;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--r-sm);background:transparent;cursor:pointer}
+.aiout{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-top:14px;font-size:13px;color:var(--text-body);line-height:1.7;display:none;white-space:pre-wrap;max-height:260px;overflow-y:auto}
+.aiout b,.aiout strong{font-weight:500;color:var(--navy)}
+.ldr{display:none;flex-direction:column;align-items:center;padding:20px;gap:10px}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--coral);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 24px;color:var(--text-light)}
+.empty.show{display:flex}
+.empty svg{width:32px;height:32px;stroke-width:1.3;margin-bottom:12px;opacity:0.4}
+.empty p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+@media(min-width:900px){
+  .pattern-grid{grid-template-columns:repeat(4,1fr);padding:0 24px 40px}
+  .filter-bar,.search-wrap,.count-bar{padding-left:24px;padding-right:24px}
+  .topbar{padding:14px 28px}
+  .overlay{align-items:center}
+  .drawer{border-radius:var(--r-lg);max-height:85dvh}
+  .dslinks-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(min-width:1200px){.pattern-grid{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="topbar-title">Pattern <em>bank</em></div>
+  </div>
+  <button class="ai-gen-btn" onclick="openAI()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+    Generate
+  </button>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <span class="flabel">Category</span>
+    <div class="f-chip on" data-d="cat" data-v="all" onclick="setF('cat','all',this)">All</div>
+    <div class="f-chip" data-d="cat" data-v="floral" onclick="setF('cat','floral',this)">🌸 Floral</div>
+    <div class="f-chip" data-d="cat" data-v="geometric" onclick="setF('cat','geometric',this)">◇ Geometric</div>
+    <div class="f-chip" data-d="cat" data-v="texture" onclick="setF('cat','texture',this)">≋ Texture</div>
+    <div class="f-chip" data-d="cat" data-v="border" onclick="setF('cat','border',this)">⬚ Border</div>
+    <div class="f-chip" data-d="cat" data-v="novelty" onclick="setF('cat','novelty',this)">✦ Novelty</div>
+    <div class="filter-divider"></div>
+    <span class="flabel">Use</span>
+    <div class="f-chip lav on" data-d="use" data-v="all" onclick="setF('use','all',this)">All</div>
+    <div class="f-chip lav" data-d="use" data-v="background" onclick="setF('use','background',this)">Background</div>
+    <div class="f-chip lav" data-d="use" data-v="clothing" onclick="setF('use','clothing',this)">Clothing</div>
+    <div class="f-chip lav" data-d="use" data-v="border" onclick="setF('use','border',this)">Border</div>
+    <div class="f-chip lav" data-d="use" data-v="filler" onclick="setF('use','filler',this)">Filler</div>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  <input type="text" class="search-input" id="search-input" placeholder="Search patterns…" oninput="render()">
+</div>
+
+<div class="count-bar"><div><span id="count">30</span> patterns</div></div>
+<div class="pattern-grid" id="grid"></div>
+<div class="empty" id="empty">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  <p>No patterns match. Try adjusting filters or generate a new one.</p>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="drawer">
+    <div class="dhandle"></div>
+    <div class="dgallery" id="dgallery"></div>
+    <div class="dslinks"><div class="dslinks-label">Find real examples →</div><div class="dslinks-grid" id="dslinks"></div></div>
+    <div class="dbody">
+      <div class="dname" id="dname"></div>
+      <div class="dbadges" id="dbadges"></div>
+      <div class="dsec"><div class="dsec-label">How to draw it</div><div class="steps" id="dsteps"></div></div>
+      <div class="dsec"><div class="dsec-label">Marker colors that work well</div><div class="mrow" id="dmarkers"></div></div>
+    </div>
+    <button class="close-btn" onclick="document.getElementById('overlay').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<!-- AI MODAL -->
+<div class="modal-ov" id="aimodal">
+  <div class="modal-box">
+    <div class="mtitle">Generate a pattern</div>
+    <div class="msub">Describe what you need — get drawing steps, marker colors, and search links for real examples.</div>
+    <label class="mlabel">Describe the pattern</label>
+    <input type="text" class="minput" id="aiprompt" placeholder="e.g. tiny mushrooms on cream, kawaii cute style">
+    <label class="mlabel">Category</label>
+    <div class="mchips" id="aicat">
+      <div class="mc" onclick="pick(this,'aicat')">Floral</div>
+      <div class="mc" onclick="pick(this,'aicat')">Geometric</div>
+      <div class="mc" onclick="pick(this,'aicat')">Texture</div>
+      <div class="mc" onclick="pick(this,'aicat')">Border</div>
+      <div class="mc" onclick="pick(this,'aicat')">Novelty</div>
+    </div>
+    <label class="mlabel">Use case</label>
+    <div class="mchips" id="aiuse">
+      <div class="mc" onclick="pick(this,'aiuse')">Background</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Clothing</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Border</div>
+      <div class="mc" onclick="pick(this,'aiuse')">Filler</div>
+    </div>
+    <div class="ldr" id="ldr"><div class="spinner"></div></div>
+    <div class="aiout" id="aiout"></div>
+    <div class="mactions">
+      <button class="mcancel" onclick="closeAI()">Cancel</button>
+      <button class="mbtn" onclick="runAI()">Generate</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PEXELS_KEY = '27Slfj1XQrpsn8nfd5S3gEsNPyauszeggpjMO5O95fQ87d7qCiy48uND';
+const imgCache = {};
+
+async function pexels(query, perPage=1, page=1){
+  const key = query+'|'+perPage+'|'+page;
+  if(imgCache[key]) return imgCache[key];
+  try{
+    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`,{
+      headers:{'Authorization': PEXELS_KEY}
+    });
+    const data = await res.json();
+    imgCache[key] = data.photos || [];
+    return imgCache[key];
+  } catch(e){ return []; }
+}
+
+const P = [
+  {id:1,name:"Tiny daisies",cat:"floral",use:["background","filler"],
+   pq:"daisy floral pattern",gq:["white daisy pattern","yellow daisy fabric","daisy flower print","daisy illustration pattern"],
+   s:{pi:"daisy pattern coloring book marker art",ig:"daisypattern coloringbook",yt:"daisy pattern coloring tutorial markers",go:"daisy repeat pattern coloring inspiration"},
+   steps:["Draw a small circle (4–5mm) for the centre, fill with yellow","Add 6–8 short rounded petals around it","Scatter with equal spacing, stagger rows naturally","Add a tiny leaf beside every third daisy"],
+   mk:[{n:"Petal white",h:"#F5F0E8"},{n:"Sunny yellow",h:"#F5C842"},{n:"Leaf green",h:"#5A8C5A"},{n:"Blush centre",h:"#F2A0A0"}]},
+  {id:2,name:"Cherry blossom",cat:"floral",use:["background","clothing"],
+   pq:"cherry blossom pattern pink",gq:["sakura pattern fabric","pink blossom repeat","japanese floral pattern","spring blossom textile"],
+   s:{pi:"cherry blossom coloring book markers",ig:"cherryblossom coloringpage",yt:"sakura pattern coloring markers",go:"cherry blossom pattern coloring inspiration"},
+   steps:["Draw 5 rounded teardrop petals in a ring","Cluster 3–4 blooms on thin branch lines","Vary sizes slightly for a natural feel","Light pink petals, deeper pink centre dot"],
+   mk:[{n:"Sakura light",h:"#F7C5C5"},{n:"Petal deep",h:"#E8909A"},{n:"Branch brown",h:"#8B5E4A"},{n:"Cream bg",h:"#FAF3E7"}]},
+  {id:3,name:"Strawberry print",cat:"floral",use:["background","clothing"],
+   pq:"strawberry pattern red fabric",gq:["strawberry repeat textile","cute strawberry print","strawberry fabric design","fruit pattern kawaii"],
+   s:{pi:"strawberry pattern coloring book kawaii",ig:"strawberrypattern coloringbook",yt:"strawberry pattern coloring markers",go:"strawberry print pattern coloring"},
+   steps:["Draw a plump heart shape for each berry","Add 5–7 small white oval seeds on the surface","Draw a green star crown on top","Add tiny 5-petal white flowers between berries"],
+   mk:[{n:"Berry red",h:"#D94040"},{n:"Seed white",h:"#F8F4EC"},{n:"Leaf green",h:"#4A8C5A"},{n:"Flower cream",h:"#FEFAF0"}]},
+  {id:4,name:"Wildflower meadow",cat:"floral",use:["background"],
+   pq:"wildflower botanical pattern illustration",gq:["wildflower pattern fabric","meadow flower textile","botanical floral print","wildflower illustration"],
+   s:{pi:"wildflower meadow pattern coloring book",ig:"wildflowerpattern coloringpage",yt:"wildflower coloring tutorial markers",go:"wildflower meadow coloring inspiration"},
+   steps:["Draw tall thin stems at varied heights","Add different heads: dot clusters, X-shapes, 4-petal blooms","Vary heights — some short, some tall — naturally","Fill gaps with tiny leaves and grass blades"],
+   mk:[{n:"Lavender",h:"#A89BC4"},{n:"Meadow green",h:"#5A8C6A"},{n:"Sunflower",h:"#F0C040"},{n:"Coral",h:"#E8542E"},{n:"Sky blue",h:"#8BBEDC"}]},
+  {id:5,name:"Rose garden",cat:"floral",use:["background","clothing"],
+   pq:"rose pattern floral pink seamless",gq:["rose repeat fabric","pink roses textile","vintage rose pattern","rose illustration print"],
+   s:{pi:"rose pattern coloring book marker",ig:"rosepattern coloringbook",yt:"rose pattern coloring tutorial",go:"rose repeat pattern coloring"},
+   steps:["Draw a tight spiral for the rose centre","Add 3 rings of petals, each row larger and more open","Keep outermost petal edges loose and wavy","Scatter at different angles; add simple leaf pairs between roses"],
+   mk:[{n:"Rose blush",h:"#F2998A"},{n:"Rose deep",h:"#D94060"},{n:"Leaf green",h:"#3D7A40"},{n:"Petal shadow",h:"#C06070"}]},
+  {id:6,name:"Sunflower field",cat:"floral",use:["background","clothing"],
+   pq:"sunflower pattern yellow seamless fabric",gq:["sunflower repeat textile","sunflower print fabric","sunflower design pattern","sunflower illustration"],
+   s:{pi:"sunflower pattern coloring book",ig:"sunflowerpattern coloring",yt:"sunflower coloring tutorial marker",go:"sunflower repeat pattern coloring"},
+   steps:["Draw the centre: circle with crosshatch dots","Add 12–14 elongated oval petals radiating out","Alternate slightly shorter petals between main ones","Add broad leaf pairs on a thick stem below each flower"],
+   mk:[{n:"Petal gold",h:"#E8B830"},{n:"Centre brown",h:"#5C3A1E"},{n:"Leaf green",h:"#3D7A40"},{n:"Shadow amber",h:"#C88C20"}]},
+  {id:7,name:"Botanical leaves",cat:"floral",use:["background","clothing","border"],
+   pq:"botanical leaf pattern green fabric",gq:["botanical leaf repeat","tropical leaf pattern","green leaf textile","botanical illustration"],
+   s:{pi:"botanical leaf pattern coloring book",ig:"botanicalpattern coloringbook",yt:"botanical leaf coloring tutorial",go:"botanical leaf pattern coloring"},
+   steps:["Draw varied leaf shapes: oval, elongated, heart-shaped","Add a central midrib and 4–6 veins branching off","Cluster leaves in pairs or threes on thin stems","Use at least 3 green shades for depth"],
+   mk:[{n:"Deep green",h:"#2D5A30"},{n:"Mid green",h:"#5A8C5A"},{n:"Light green",h:"#A0C880"},{n:"Stem brown",h:"#8B6840"}]},
+  {id:8,name:"Checkerboard",cat:"geometric",use:["background","clothing"],
+   pq:"checkerboard pattern colorful aesthetic",gq:["checker pattern pastel","checkerboard fabric","checkered aesthetic","gingham check colorful"],
+   s:{pi:"checkerboard pattern coloring book",ig:"checkerboardpattern coloringbook",yt:"checkerboard pattern coloring",go:"checkerboard pattern coloring inspiration"},
+   steps:["Draw a grid of equally spaced squares","Fill alternating squares with your accent colour","Leave others as base paper colour","Mark the grid lightly in pencil first"],
+   mk:[{n:"Navy",h:"#1A2238"},{n:"Cream",h:"#FAF3E7"},{n:"Dusty rose",h:"#D4A5A5"},{n:"Sage",h:"#7A9E76"}]},
+  {id:9,name:"Moroccan tile",cat:"geometric",use:["background","filler"],
+   pq:"moroccan tile pattern colorful geometric",gq:["moroccan tile blue","zellige tile pattern","moroccan geometric","islamic tile colorful"],
+   s:{pi:"moroccan tile pattern coloring book",ig:"moroccantile coloringpattern",yt:"moroccan tile coloring tutorial",go:"moroccan geometric tile coloring"},
+   steps:["Start with a cross shape in the centre","Draw four pointed petals between the cross arms","Add a smaller diamond at each intersection","Repeat in a tight grid — shapes interlock exactly"],
+   mk:[{n:"Terracotta",h:"#C4603A"},{n:"Teal",h:"#3A8C8A"},{n:"Cream",h:"#F8F0E0"},{n:"Navy",h:"#1A2238"}]},
+  {id:10,name:"Diagonal stripes",cat:"geometric",use:["background","clothing","border"],
+   pq:"diagonal stripe pattern colorful fabric",gq:["diagonal stripes bold","stripe pattern pastel","candy stripe fabric","colorful diagonal textile"],
+   s:{pi:"diagonal stripe pattern coloring book",ig:"stripepattern coloringbook",yt:"stripe pattern coloring tutorial",go:"diagonal stripe pattern coloring"},
+   steps:["Draw parallel diagonal lines at 45°, evenly spaced","Space about 6–8mm apart","Fill alternate bands with colour","For double stripe: add a thin second line beside each main line"],
+   mk:[{n:"Stripe coral",h:"#E8542E"},{n:"Stripe bg",h:"#FAF3E7"},{n:"Stripe lavender",h:"#A89BC4"}]},
+  {id:11,name:"Polka dots",cat:"geometric",use:["background","clothing","filler"],
+   pq:"polka dot pattern pastel colorful",gq:["polka dot retro colorful","pastel dots fabric","colorful dot pattern","large polka dot pastel"],
+   s:{pi:"polka dot pattern coloring book",ig:"polkadot coloringbook",yt:"polka dot coloring tutorial",go:"polka dot pattern coloring"},
+   steps:["Mark a regular grid with light pencil dots","Draw a filled circle at each point — consistent size","Leave equal white space between each dot","Retro look: alternate two dot sizes in staggered rows"],
+   mk:[{n:"Dot coral",h:"#E8542E"},{n:"Dot lavender",h:"#A89BC4"},{n:"Dot navy",h:"#1A2238"},{n:"Bg cream",h:"#FAF3E7"}]},
+  {id:12,name:"Argyle diamonds",cat:"geometric",use:["background","clothing"],
+   pq:"argyle pattern diamond colorful",gq:["argyle pattern classic","diamond argyle textile","colorful argyle fabric","preppy argyle knit"],
+   s:{pi:"argyle pattern coloring book",ig:"argylepattern coloringbook",yt:"argyle diamond coloring tutorial",go:"argyle diamond pattern coloring"},
+   steps:["Draw a large diamond with thin pencil lines","Add a smaller diamond centred inside","Cross-hatch the space between with diagonal lines","Repeat in a brick pattern, alternating colour families"],
+   mk:[{n:"Diamond A",h:"#A89BC4"},{n:"Diamond B",h:"#E8542E"},{n:"Line grey",h:"#B8B0C8"},{n:"Bg cream",h:"#F8F4EE"}]},
+  {id:13,name:"Scallop tiles",cat:"geometric",use:["background","border"],
+   pq:"scallop pattern fish scale colorful",gq:["scallop tile pattern","fish scale colorful","mermaid scale pattern","scallop repeat fabric"],
+   s:{pi:"scallop scale pattern coloring book",ig:"scalloppattern coloringbook",yt:"scallop pattern coloring tutorial",go:"scallop fish scale coloring"},
+   steps:["Draw overlapping semicircles in rows","Each row starts halfway between the circles above","Fill alternating rows with a second colour","Add a small circle dot at each scallop base"],
+   mk:[{n:"Scallop A",h:"#F2998A"},{n:"Scallop B",h:"#FAF3E7"},{n:"Outline",h:"#DCD0BB"},{n:"Dot accent",h:"#A89BC4"}]},
+  {id:14,name:"Houndstooth",cat:"geometric",use:["background","clothing"],
+   pq:"houndstooth pattern fabric classic",gq:["houndstooth black white","colorful houndstooth","pastel houndstooth","modern houndstooth textile"],
+   s:{pi:"houndstooth pattern coloring book",ig:"houndstooth coloringpattern",yt:"houndstooth coloring tutorial",go:"houndstooth pattern coloring"},
+   steps:["Draw an irregular quadrilateral with a notch on one side","Repeat in a 2×2 interlocking tile","Alternate two contrasting colours","Each piece locks perfectly into its neighbours"],
+   mk:[{n:"Dark",h:"#1A2238"},{n:"Light",h:"#F8F4EC"},{n:"Alt warm",h:"#E8C0A0"}]},
+  {id:15,name:"Windowpane grid",cat:"geometric",use:["background","clothing"],
+   pq:"windowpane plaid pattern fabric",gq:["windowpane check fabric","plaid grid textile","tartan windowpane","grid check fabric"],
+   s:{pi:"windowpane plaid coloring book",ig:"plaidpattern coloringbook",yt:"plaid grid coloring tutorial",go:"windowpane grid pattern coloring"},
+   steps:["Draw a regular grid of thin lines, both directions, 15–20mm apart","Add a second grid at 45° over the first for plaid effect","Fill small squares at intersections with a tiny dot","Use 2–3 colours for the crossing lines"],
+   mk:[{n:"Line navy",h:"#1A2238"},{n:"Line coral",h:"#E8542E"},{n:"Dot accent",h:"#A89BC4"},{n:"Bg cream",h:"#FAF3E7"}]},
+  {id:16,name:"Linen weave",cat:"texture",use:["background","clothing"],
+   pq:"linen fabric texture woven natural",gq:["linen texture close up","woven fabric texture","natural linen weave","burlap texture"],
+   s:{pi:"linen texture pattern coloring book",ig:"texturepattern coloringbook",yt:"fabric texture coloring tutorial",go:"linen weave texture coloring"},
+   steps:["Draw closely-spaced horizontal lines across the area","Add vertical lines at the same spacing to form a grid","At each intersection add a tiny square or dot for weave","Keep lines light — subtlety is the point"],
+   mk:[{n:"Thread warm",h:"#C8A87A"},{n:"Thread light",h:"#E8D8C0"},{n:"Shadow",h:"#A08860"}]},
+  {id:17,name:"Honeycomb",cat:"texture",use:["background","filler"],
+   pq:"honeycomb pattern golden hexagon",gq:["honeycomb yellow pattern","hexagon honeycomb texture","golden honeycomb fabric","geometric hexagon golden"],
+   s:{pi:"honeycomb pattern coloring book",ig:"honeycombpattern coloringbook",yt:"honeycomb hexagon coloring tutorial",go:"honeycomb pattern coloring"},
+   steps:["Draw a regular hexagon (6 equal sides)","Tile edge-to-edge — offset each row by half a hex width","Fill alternate hexagons for a 2-tone effect","Add a tiny dot in each hex centre optionally"],
+   mk:[{n:"Hex honey",h:"#E8B830"},{n:"Hex light",h:"#F8E8C0"},{n:"Outline",h:"#C89820"},{n:"Centre dot",h:"#8B6010"}]},
+  {id:18,name:"Crosshatch shade",cat:"texture",use:["filler","clothing"],
+   pq:"crosshatch pattern texture illustration",gq:["crosshatch texture ink","hatching pattern art","pen crosshatch drawing","ink hatching texture"],
+   s:{pi:"crosshatch shading coloring technique",ig:"crosshatch coloringbook",yt:"crosshatch shading coloring tutorial",go:"crosshatch texture coloring"},
+   steps:["Draw parallel diagonal lines at 45°","Add a second set at 45° in the opposite direction","For dense shade: add a third set of verticals","Vary line spacing for light, medium, or heavy shade"],
+   mk:[{n:"Line dark",h:"#3A3450"},{n:"Line mid",h:"#7A7090"},{n:"Line light",h:"#C4BBCF"}]},
+  {id:19,name:"Brick wall",cat:"texture",use:["background"],
+   pq:"brick wall pattern terracotta",gq:["brick pattern terracotta","red brick wall texture","pastel brick pattern","illustrated brick texture"],
+   s:{pi:"brick wall pattern coloring book",ig:"brickpattern coloringbook",yt:"brick wall coloring tutorial",go:"brick wall pattern coloring"},
+   steps:["Draw equal rectangles (2:1 ratio) in horizontal rows","Offset each row by half a brick width","Leave a small gap for mortar lines","Shade each brick lighter at top, darker at bottom"],
+   mk:[{n:"Brick terra",h:"#C4603A"},{n:"Brick shadow",h:"#A04A28"},{n:"Mortar",h:"#E8D8C8"},{n:"Highlight",h:"#D87850"}]},
+  {id:20,name:"Watercolour wash",cat:"texture",use:["background","filler"],
+   pq:"watercolor wash texture pastel abstract",gq:["watercolor wash pastel","watercolor soft blends","watercolor abstract art","soft watercolor texture"],
+   s:{pi:"watercolour wash background coloring",ig:"watercolorwash coloringbook",yt:"watercolour wash coloring tutorial",go:"watercolour wash coloring inspiration"},
+   steps:["Lay a light base wash across the whole area","Drop in a second colour while wet and let it bloom","Add a third colour at one edge — let it bleed naturally","Lift with a dry brush tip for subtle light texture"],
+   mk:[{n:"Rose wash",h:"#F2B0A8"},{n:"Lavender wash",h:"#C4B8D8"},{n:"Sky wash",h:"#A8C8E0"},{n:"Sage wash",h:"#A8C4A8"}]},
+  {id:21,name:"Stitched dashes",cat:"border",use:["border"],
+   pq:"embroidery stitch pattern dashed border",gq:["embroidery stitch border","running stitch pattern","dashed stitch border","cross stitch border"],
+   s:{pi:"stitched border pattern coloring book",ig:"stitchborder coloringbook",yt:"stitched border coloring tutorial",go:"embroidery stitch border coloring"},
+   steps:["Draw a straight or curved line as your border path","Add evenly-spaced rectangular dashes along it","Alternate dash angles for a running-stitch effect","Add tiny cross-stitch X marks at regular intervals"],
+   mk:[{n:"Stitch coral",h:"#E8542E"},{n:"Stitch navy",h:"#1A2238"},{n:"Stitch cream",h:"#F5EDDA"}]},
+  {id:22,name:"Botanical vine border",cat:"border",use:["border"],
+   pq:"botanical vine border illustration leaf",gq:["vine border botanical","leaf vine border","botanical border green","floral vine border"],
+   s:{pi:"botanical vine border coloring book",ig:"vineborder coloringbook",yt:"botanical border coloring tutorial",go:"botanical vine border coloring"},
+   steps:["Draw a wavy vine as the base line","Add small oval leaves alternating left and right","Place tiny flower buds at intervals","Curl vine ends into spirals where it terminates"],
+   mk:[{n:"Vine green",h:"#3D6B40"},{n:"Leaf light",h:"#7AB07A"},{n:"Flower pink",h:"#E8909A"},{n:"Flower yellow",h:"#F5C842"}]},
+  {id:23,name:"Wave border",cat:"border",use:["border","filler"],
+   pq:"wave pattern border blue ocean",gq:["wave border blue","ocean wave pattern","japanese wave design","wave stripe border"],
+   s:{pi:"wave border pattern coloring book",ig:"wavepattern coloringbook",yt:"wave pattern coloring tutorial",go:"wave border pattern coloring"},
+   steps:["Draw a continuous S-curve wave across the border","Add a second wave offset by half a wavelength below","Fill the space between waves with solid colour","Add small dots above each wave crest"],
+   mk:[{n:"Wave blue",h:"#6AB0D0"},{n:"Wave fill",h:"#B8DCF0"},{n:"Dot accent",h:"#1A2238"},{n:"Bg",h:"#FAFCFE"}]},
+  {id:24,name:"Star scatter",cat:"novelty",use:["background","filler","clothing"],
+   pq:"star pattern celestial dark blue gold",gq:["star pattern navy","gold star fabric","celestial star scatter","star constellation pattern"],
+   s:{pi:"star pattern coloring book celestial",ig:"starpattern coloringbook",yt:"star pattern coloring tutorial",go:"celestial star pattern coloring"},
+   steps:["Draw 5-pointed stars of varied sizes — 3mm to 8mm","Scatter at different angles across the surface","Alternate solid stars with outline-only stars","Add tiny 4-point sparkle crosses between larger stars"],
+   mk:[{n:"Star gold",h:"#E8C030"},{n:"Star coral",h:"#E8542E"},{n:"Star lavender",h:"#A89BC4"},{n:"Bg navy",h:"#1A2238"}]},
+  {id:25,name:"Mushroom patch",cat:"novelty",use:["background","filler"],
+   pq:"mushroom pattern cute kawaii illustration",gq:["cute mushroom pattern","kawaii mushroom fabric","toadstool pattern","mushroom print cute"],
+   s:{pi:"mushroom pattern coloring book kawaii",ig:"mushroompattern coloringbook",yt:"mushroom pattern coloring tutorial",go:"cute mushroom pattern coloring"},
+   steps:["Draw a rounded dome for the cap","Add a rectangular stalk below with slightly curved sides","Place 2–3 white oval spots on the cap","Scatter at varied sizes; add tiny grass blades at the base"],
+   mk:[{n:"Cap red",h:"#D94040"},{n:"Stalk cream",h:"#F5EBD8"},{n:"Spot white",h:"#FFFFFF"},{n:"Grass green",h:"#5A8C5A"}]},
+  {id:26,name:"Raindrop scatter",cat:"novelty",use:["background","clothing"],
+   pq:"raindrop pattern blue water drop",gq:["raindrop pattern blue","water drop fabric","rain drop print","teardrop pattern blue"],
+   s:{pi:"raindrop pattern coloring book",ig:"raindroppattern coloringbook",yt:"raindrop pattern coloring tutorial",go:"raindrop teardrop coloring"},
+   steps:["Draw a teardrop shape: circle bottom, pointed top","Scatter at random angles across the surface","Use 2–3 blues from light to deep","Add a tiny horizontal highlight line inside each drop"],
+   mk:[{n:"Rain deep",h:"#4A80C0"},{n:"Rain mid",h:"#7AB0E0"},{n:"Rain light",h:"#B8D8F8"},{n:"Highlight",h:"#DCEEFF"}]},
+  {id:27,name:"Tiny hearts",cat:"novelty",use:["background","clothing","filler"],
+   pq:"heart pattern pink love seamless fabric",gq:["heart pattern pink","love heart repeat","cute heart pastel","heart print textile"],
+   s:{pi:"heart pattern coloring book cute",ig:"heartpattern coloringbook",yt:"heart pattern coloring tutorial",go:"heart print pattern coloring"},
+   steps:["Draw two small circles side by side","Extend the bottom into a V point","Vary sizes: large hearts surrounded by tiny ones","Scatter at different angles for a playful feel"],
+   mk:[{n:"Heart coral",h:"#E8542E"},{n:"Heart pink",h:"#F2998A"},{n:"Heart lavender",h:"#A89BC4"},{n:"Bg cream",h:"#FEF8F5"}]},
+  {id:28,name:"Cloud and sun",cat:"novelty",use:["background","clothing"],
+   pq:"cloud sun pattern kawaii cute pastel",gq:["cloud pattern kawaii","sun cloud fabric","cute weather pattern","cloud print pastel"],
+   s:{pi:"cloud sun pattern coloring book",ig:"cloudpattern coloringbook",yt:"cloud sun coloring tutorial",go:"cloud sun kawaii coloring"},
+   steps:["Draw a sun: circle with short radiating lines","Draw a cloud: overlapping bumpy circles","Scatter at varied scales — big sun, smaller cloud beside","Add tiny stars between elements for a dreamy feel"],
+   mk:[{n:"Sun yellow",h:"#F5C030"},{n:"Cloud white",h:"#F8F8F8"},{n:"Sky blue",h:"#C0DEFF"},{n:"Sun orange",h:"#F09030"}]},
+  {id:29,name:"Smiley faces",cat:"novelty",use:["filler","clothing"],
+   pq:"smiley face pattern yellow fun fabric",gq:["smiley face yellow pattern","happy face fabric","emoji pattern print","smile face yellow"],
+   s:{pi:"smiley face pattern coloring book",ig:"smileypattern coloringbook",yt:"smiley face coloring tutorial",go:"smiley face pattern coloring"},
+   steps:["Draw a circle for the face","Add two small filled circles for eyes","Draw a curved arc for the smile","Add rosy cheek circles in blush for extra cuteness"],
+   mk:[{n:"Face yellow",h:"#F5D060"},{n:"Eyes navy",h:"#1A2238"},{n:"Cheeks pink",h:"#F2A0A0"},{n:"Outline",h:"#3A3450"}]},
+  {id:30,name:"Half-drop circles",cat:"geometric",use:["background","clothing"],
+   pq:"circle pattern colorful seamless pastel",gq:["circle repeat colorful","large polka dot offset","bubble pattern fabric","circle grid colorful"],
+   s:{pi:"circle drop pattern coloring book",ig:"circlepattern coloringbook",yt:"circle pattern coloring tutorial",go:"half drop circle pattern coloring"},
+   steps:["Draw circles in a regular grid","Offset every other column downward by half the circle height","Allow circles to gently touch or slightly overlap","Use two tones within each circle for depth"],
+   mk:[{n:"Circle A",h:"#F2998A"},{n:"Circle B",h:"#A89BC4"},{n:"Circle C",h:"#E8C030"},{n:"Bg",h:"#FAF3E7"}]},
+];
+
+let fCat='all', fUse='all';
+
+function setF(d,v,el){
+  if(d==='cat'){fCat=v;document.querySelectorAll('.f-chip[data-d="cat"]').forEach(c=>c.classList.remove('on'));}
+  else{fUse=v;document.querySelectorAll('.f-chip[data-d="use"]').forEach(c=>c.classList.remove('on'));}
+  el.classList.add('on'); render();
+}
+
+async function render(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase().trim();
+  const grid=document.getElementById('grid'), empty=document.getElementById('empty');
+  const m=P.filter(p=>(fCat==='all'||p.cat===fCat)&&(fUse==='all'||p.use.includes(fUse))&&(!q||p.name.toLowerCase().includes(q)||p.cat.includes(q)||p.use.join(' ').includes(q)));
+  document.getElementById('count').textContent=m.length;
+  grid.innerHTML='';
+  if(!m.length){grid.style.display='none';empty.classList.add('show');return;}
+  grid.style.display='grid'; empty.classList.remove('show');
+
+  m.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='p-card'; card.onclick=()=>openDrawer(p);
+    card.innerHTML=`
+      <div class="p-img-wrap" id="wrap-${p.id}">
+        <div class="p-skeleton"></div>
+        <div class="p-fallback" id="fb-${p.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>${p.name}</span>
+        </div>
+        <div class="p-tags"><span class="p-tag">${p.cat}</span><span class="p-tag u">${p.use[0]}</span></div>
+      </div>
+      <div class="p-info"><div class="p-name">${p.name}</div><div class="p-meta">${p.use.join(' · ')}</div></div>`;
+    grid.appendChild(card);
+
+    // Fetch image asynchronously after card is in DOM
+    pexels(p.pq, 1).then(photos=>{
+      const wrap=document.getElementById('wrap-'+p.id);
+      if(!wrap) return;
+      if(photos && photos.length > 0){
+        const photo=photos[0];
+        const img=document.createElement('img');
+        img.className='p-img';
+        img.src=photo.src.medium;
+        img.alt=p.name;
+        img.onload=()=>img.classList.add('ready');
+        img.onerror=()=>{ img.remove(); document.getElementById('fb-'+p.id)?.classList.add('show'); };
+        // Remove skeleton, add image
+        wrap.querySelector('.p-skeleton')?.remove();
+        wrap.insertBefore(img, wrap.querySelector('.p-tags'));
+        if(photo.photographer){
+          const credit=document.createElement('span');
+          credit.className='p-photo-credit';
+          credit.textContent='📷 '+photo.photographer;
+          wrap.appendChild(credit);
+        }
+      } else {
+        wrap.querySelector('.p-skeleton')?.remove();
+        document.getElementById('fb-${p.id}')?.classList.add('show');
+      }
+    });
+  });
+}
+
+async function openDrawer(p){
+  // Gallery: 4 images from varied queries
+  const gallery=document.getElementById('dgallery');
+  gallery.innerHTML=p.gq.map((_,i)=>`<div class="dgallery-cell" id="gc-${p.id}-${i}"><div class="dskel"></div></div>`).join('');
+
+  p.gq.forEach(async (q,i)=>{
+    const photos=await pexels(q,3,1);
+    const cell=document.getElementById(`gc-${p.id}-${i}`);
+    if(!cell) return;
+    // pick a different photo for variety
+    const photo=photos[i % Math.max(photos.length,1)];
+    if(photo){
+      const img=document.createElement('img');
+      img.src=photo.src.small;
+      img.alt=q;
+      img.onload=()=>img.classList.add('ready');
+      img.onerror=()=>img.remove();
+      cell.querySelector('.dskel')?.remove();
+      cell.appendChild(img);
+      if(photo.photographer){
+        const cr=document.createElement('span');
+        cr.className='dgallery-credit';
+        cr.textContent=photo.photographer;
+        cell.appendChild(cr);
+      }
+    }
+  });
+
+  // Search links
+  document.getElementById('dslinks').innerHTML=
+    `<a class="slink pi" href="https://pinterest.com/search/pins/?q=${encodeURIComponent(p.s.pi)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+      <div><div class="slink-name">Pinterest</div><div class="slink-sub">Real examples</div></div></a>
+     <a class="slink ig" href="https://www.instagram.com/explore/tags/${encodeURIComponent(p.s.ig.replace(/ /g,''))}/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      <div><div class="slink-name">Instagram</div><div class="slink-sub">Browse hashtag</div></div></a>
+     <a class="slink yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.s.yt)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+      <div><div class="slink-name">YouTube</div><div class="slink-sub">Watch tutorials</div></div></a>
+     <a class="slink go" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(p.s.go)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <div><div class="slink-name">Google Images</div><div class="slink-sub">More inspiration</div></div></a>`;
+
+  document.getElementById('dname').textContent=p.name;
+  document.getElementById('dbadges').innerHTML=`<span class="dbadge c">${p.cat}</span>`+p.use.map(u=>`<span class="dbadge u">${u}</span>`).join('');
+  document.getElementById('dsteps').innerHTML=p.steps.map((s,i)=>`<div class="step"><div class="stepn">${i+1}</div><div class="stept">${s}</div></div>`).join('');
+  document.getElementById('dmarkers').innerHTML=p.mk.map(m=>`<div class="mchip"><div class="mdot" style="background:${m.h}"></div><div><div class="mname">${m.n}</div><div class="mhex">${m.h}</div></div></div>`).join('');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function maybeClose(e){if(e.target===document.getElementById('overlay'))document.getElementById('overlay').classList.remove('open');}
+function openAI(){document.getElementById('aimodal').classList.add('open');}
+function closeAI(){
+  document.getElementById('aimodal').classList.remove('open');
+  document.getElementById('aiout').style.display='none';
+  document.getElementById('aiout').innerHTML='';
+  document.getElementById('ldr').style.display='none';
+  document.getElementById('aiprompt').value='';
+  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('on'));
+}
+function pick(el,gid){document.querySelectorAll(`#${gid} .mc`).forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+document.getElementById('aimodal').addEventListener('click',e=>{if(e.target===document.getElementById('aimodal'))closeAI();});
+document.getElementById('overlay').addEventListener('click',maybeClose);
+
+async function runAI(){
+  const prompt=document.getElementById('aiprompt').value.trim();
+  if(!prompt){document.getElementById('aiprompt').focus();return;}
+  const cat=document.querySelector('#aicat .mc.on')?.textContent||'any';
+  const use=document.querySelector('#aiuse .mc.on')?.textContent||'any';
+  document.getElementById('ldr').style.display='flex';
+  document.getElementById('aiout').style.display='none';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,messages:[{role:'user',content:`You are a coloring book art specialist. Generate a pattern suggestion.\n\nPattern: "${prompt}"\nCategory: ${cat} | Use: ${use}\n\nRespond with:\n\n**Pattern name** (3 words max)\n\n**How to draw it — 4 steps**\nSpecific marker-friendly instructions for cozy illustrated coloring books.\n\n**Marker colors — 4 suggestions**\nFormat: Color name — #HEXCODE\nUse soft cozy colors.\n\n**Search terms to find real examples**\n- Pinterest: [phrase]\n- Instagram hashtag: [oneword]\n- YouTube: [phrase]`}]})});
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    document.getElementById('aiout').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    document.getElementById('aiout').style.display='block';
+  }catch(e){
+    document.getElementById('aiout').innerHTML='Something went wrong — please try again.';
+    document.getElementById('aiout').style.display='block';
+  }
+  document.getElementById('ldr').style.display='none';
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cozy Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────── TOKENS ───────────────────────── */
+:root{
+  --cream:#FAF6F1;
+  --sand:#F0E8DF;
+  --blush:#F5E6E0;
+  --rose:#D4A5A5;
+  --dusty-rose:#C4847A;
+  --warm-brown:#8B5E4A;
+  --espresso:#4A2E22;
+  --sage:#B5C4B1;
+  --sage-deep:#7A9E76;
+  --card:#FFFFFF;
+  --card-warm:#FDF5F0;
+  --border:#EAE0D8;
+  --border-strong:#D4C5BB;
+  --text-muted:#9B7E72;
+  --text-light:#C4A89A;
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --nav-h:64px;
+  /* per-hobby accent colors */
+  --hobby-coloring:#C4847A;
+  --hobby-embroidery:#A88BC4;
+  --hobby-lego:#D4A53A;
+  --hobby-fiction:#7A9E9E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--cream)}
+body{font-family:'Inter',sans-serif;color:#5C3D30;overscroll-behavior:none}
+img{display:block;max-width:100%}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none;color:inherit}
+
+/* ───────────────────────── LAYOUT ───────────────────────── */
+#app{min-height:100dvh;display:flex;flex-direction:column}
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + 20px)}
+.page.active{display:block}
+.page-inner{max-width:480px;margin:0 auto;padding:0 16px}
+
+/* ───────────────────────── HOBBY SWITCHER ───────────────────────── */
+.hobby-switcher{
+  display:flex;gap:8px;padding:14px 16px 10px;overflow-x:auto;
+  background:var(--cream);position:sticky;top:0;z-index:50;
+}
+.hobby-switcher::-webkit-scrollbar{display:none}
+.hobby-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:20px;
+  border:1.5px solid var(--border-strong);background:var(--card);
+  font-size:12px;font-weight:500;color:var(--text-muted);
+  white-space:nowrap;flex-shrink:0;transition:all 0.15s;
+}
+.hobby-chip svg{width:15px;height:15px;stroke-width:1.8;opacity:0.7}
+.hobby-chip.active{color:#fff;border-color:transparent}
+.hobby-chip.active svg{opacity:1}
+.hobby-chip[data-hobby="coloring"].active{background:var(--hobby-coloring)}
+.hobby-chip[data-hobby="embroidery"].active{background:var(--hobby-embroidery)}
+.hobby-chip[data-hobby="lego"].active{background:var(--hobby-lego)}
+.hobby-chip[data-hobby="fiction"].active{background:var(--hobby-fiction)}
+
+/* ───────────────────────── HERO ───────────────────────── */
+.page-hero{padding:20px 20px 18px;position:relative;overflow:hidden}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+.hero-title{font-family:'Playfair Display',serif;font-size:25px;font-weight:400;color:var(--espresso);line-height:1.25}
+.hero-title em{font-style:italic}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6}
+
+/* ───────────────────────── CARDS ───────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:12px}
+.card-warm{background:var(--card-warm)}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--espresso);margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--text-muted);line-height:1.65}
+.section-label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-light);margin:22px 0 10px;display:flex;align-items:center;justify-content:space-between}
+.section-label .see-all{font-size:11px;font-weight:500;color:var(--dusty-rose);text-transform:none;letter-spacing:0;cursor:pointer}
+
+/* ───────────────────────── BUTTON ───────────────────────── */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:12px 16px;background:var(--warm-brown);color:#FDF5F0;
+  font-size:13px;font-weight:500;border-radius:var(--radius-sm);
+  transition:opacity 0.15s,transform 0.1s;
+}
+.btn:active{opacity:0.85;transform:scale(0.98)}
+.btn-ghost{background:transparent;color:var(--warm-brown);border:1px solid var(--border-strong)}
+.btn svg{width:15px;height:15px;stroke-width:2;flex-shrink:0}
+
+/* ───────────────────────── HOME: CROSS-HOBBY MOODBOARD ───────────────────────── */
+.home-banner{
+  background:linear-gradient(135deg,var(--blush) 0%,var(--sand) 100%);
+  padding:30px 20px 24px;position:relative;overflow:hidden;
+}
+.home-banner h1{font-family:'Playfair Display',serif;font-size:26px;color:var(--espresso);line-height:1.3}
+.home-banner h1 em{font-style:italic;color:var(--dusty-rose)}
+.home-banner p{font-size:13px;color:var(--text-muted);margin-top:6px}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--sand);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.status-date{font-size:12px;color:var(--text-muted)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--sage-deep);display:inline-block;margin-right:5px}
+
+.moodboard-grid{display:flex;flex-direction:column;gap:10px}
+.mood-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:14px;cursor:pointer;transition:all 0.12s;position:relative;overflow:hidden;
+}
+.mood-card:active{transform:scale(0.99)}
+.mood-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.mood-icon{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.mood-icon svg{width:18px;height:18px;stroke-width:1.7;color:#fff}
+.mood-card[data-hobby="coloring"] .mood-icon{background:var(--hobby-coloring)}
+.mood-card[data-hobby="embroidery"] .mood-icon{background:var(--hobby-embroidery)}
+.mood-card[data-hobby="lego"] .mood-icon{background:var(--hobby-lego)}
+.mood-card[data-hobby="fiction"] .mood-icon{background:var(--hobby-fiction)}
+.mood-card-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-light)}
+.mood-card-hobby{font-family:'Playfair Display',serif;font-size:15px;color:var(--espresso)}
+.mood-card-trend{font-size:12.5px;color:var(--text-muted);line-height:1.55;padding-left:44px}
+.mood-card-swatches{display:flex;gap:5px;padding-left:44px;margin-top:8px}
+.mini-swatch{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,0.06)}
+
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:14px;cursor:pointer;transition:all 0.12s;
+}
+.qa-card:active{background:var(--blush)}
+.qa-card svg{width:20px;height:20px;stroke-width:1.6;color:var(--dusty-rose);margin-bottom:8px}
+.qa-card strong{display:block;font-family:'Playfair Display',serif;font-weight:400;font-size:14px;color:var(--espresso);margin-bottom:2px}
+.qa-card span{font-size:11px;color:var(--text-light)}
+
+.book-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.book-row:last-child{border:none}
+.book-dot{width:8px;height:8px;border-radius:50%;background:var(--rose);flex-shrink:0}
+.book-row span{font-size:13px}
+
+/* ───────────────────────── PLACEHOLDER MODULE PAGES ───────────────────────── */
+.coming-soon{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:48px 24px;color:var(--text-light);
+}
+.coming-soon svg{width:36px;height:36px;stroke-width:1.3;margin-bottom:14px;opacity:0.5}
+.coming-soon h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--text-muted);margin-bottom:6px;font-weight:400}
+.coming-soon p{font-size:12.5px;line-height:1.6;max-width:280px}
+.module-badge{display:inline-block;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--blush);color:var(--dusty-rose);margin-top:14px}
+
+/* ───────────────────────── BOTTOM NAV (changes per hobby) ───────────────────────── */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(250,246,241,0.95);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom);z-index:100;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 2px;cursor:pointer;color:var(--text-light);transition:color 0.15s;
+}
+.nav-item.active{color:var(--warm-brown)}
+.nav-item svg{width:21px;height:21px;stroke-width:1.6;fill:none}
+.nav-item span{font-size:10px;font-weight:500;letter-spacing:0.02em}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════ HOBBY SWITCHER (persistent) ══════════ -->
+<div class="hobby-switcher">
+  <button class="hobby-chip active" data-hobby="coloring" onclick="switchHobby('coloring',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    Coloring
+  </button>
+  <button class="hobby-chip" data-hobby="embroidery" onclick="switchHobby('embroidery',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>
+    Embroidery
+  </button>
+  <button class="hobby-chip" data-hobby="lego" onclick="switchHobby('lego',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg>
+    Lego
+  </button>
+  <button class="hobby-chip" data-hobby="fiction" onclick="switchHobby('fiction',this)">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    Fiction
+  </button>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page active" id="pg-home">
+  <div class="home-banner">
+    <div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--dusty-rose);margin-bottom:6px">Your creative studio</div>
+    <h1>Cozy<br><em>Studio</em></h1>
+    <p>One glance across everything you make.</p>
+  </div>
+  <div class="status-bar">
+    <span class="status-date" id="home-date"></span>
+    <span style="font-size:12px;color:var(--sage-deep)"><span class="status-dot"></span>Live trends</span>
+  </div>
+  <div class="page-inner" style="padding-top:18px">
+
+    <div class="section-label">Across your hobbies<span class="see-all">Today</span></div>
+    <div class="moodboard-grid">
+
+      <div class="mood-card" data-hobby="coloring" onclick="goHobbyHome('coloring')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div>
+            <div class="mood-card-label">Coloring</div>
+            <div class="mood-card-hobby">Today's palette is leaning warm</div>
+          </div>
+        </div>
+        <div class="mood-card-trend">Terracotta and sage pairings are trending across cozy illustrated pages this week.</div>
+        <div class="mood-card-swatches">
+          <div class="mini-swatch" style="background:#C4847A"></div>
+          <div class="mini-swatch" style="background:#B5C4B1"></div>
+          <div class="mini-swatch" style="background:#E8C9A8"></div>
+          <div class="mini-swatch" style="background:#8B5E4A"></div>
+        </div>
+      </div>
+
+      <div class="mood-card" data-hobby="embroidery" onclick="goHobbyHome('embroidery')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg></div>
+          <div>
+            <div class="mood-card-label">Embroidery</div>
+            <div class="mood-card-hobby">Monthly calendar season</div>
+          </div>
+        </div>
+        <div class="mood-card-trend">Paper embroidery calendars with seasonal florals are having a moment this month.</div>
+      </div>
+
+      <div class="mood-card" data-hobby="lego" onclick="goHobbyHome('lego')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg></div>
+          <div>
+            <div class="mood-card-label">Lego</div>
+            <div class="mood-card-hobby">Botanical sets are buzzing</div>
+          </div>
+        </div>
+        <div class="mood-card-trend">Build-and-display content for botanical and architecture sets is getting strong engagement.</div>
+      </div>
+
+      <div class="mood-card" data-hobby="fiction" onclick="goHobbyHome('fiction')">
+        <div class="mood-card-top">
+          <div class="mood-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div>
+            <div class="mood-card-label">Fiction</div>
+            <div class="mood-card-hobby">Cozy fantasy still dominates</div>
+          </div>
+        </div>
+        <div class="mood-card-trend">BookTok continues to favor cozy fantasy and romantasy releases this season.</div>
+      </div>
+
+    </div>
+
+    <div class="section-label">Quick access · coloring</div>
+    <div class="quick-actions">
+      <div class="qa-card" onclick="goPage('trends')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <strong>Trend pulse</strong>
+        <span>Today's palette & pattern intel</span>
+      </div>
+      <div class="qa-card" onclick="goPage('gallery')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Inspiration</strong>
+        <span>Find references for a page</span>
+      </div>
+      <div class="qa-card" onclick="goPage('patterns')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <strong>Pattern bank</strong>
+        <span>Browse and reuse patterns</span>
+      </div>
+      <div class="qa-card" onclick="goPage('tutorials')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <strong>Tutorials</strong>
+        <span>Learn as you color</span>
+      </div>
+    </div>
+
+    <div class="section-label">Your Cocowyo books</div>
+    <div class="card">
+      <div class="book-row"><div class="book-dot"></div><span>Comfy Corners</span></div>
+      <div class="book-row"><div class="book-dot"></div><span>Cozy Days</span></div>
+      <div class="book-row"><div class="book-dot"></div><span>Girl Moments</span></div>
+      <div class="book-row"><div class="book-dot"></div><span>Cozy Cuties</span></div>
+      <div class="book-row"><div class="book-dot"></div><span>Cozy Friends</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ COLORING HOBBY HOME ══════════ -->
+<div class="page" id="pg-coloring-home">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Coloring studio</div>
+    <h1 class="hero-title">Your <em style="color:var(--dusty-rose)">coloring</em> hub</h1>
+    <p class="hero-sub">Inspiration, patterns, tutorials, and trends — everything for your next page.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="quick-actions">
+      <div class="qa-card" onclick="goPage('gallery')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Inspiration gallery</strong>
+        <span>Match a page or browse a book</span>
+      </div>
+      <div class="qa-card" onclick="goPage('patterns')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <strong>Pattern bank</strong>
+        <span>Floral, geometric, texture</span>
+      </div>
+      <div class="qa-card" onclick="goPage('ideas')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <strong>Content ideas</strong>
+        <span>Trend-tied post angles</span>
+      </div>
+      <div class="qa-card" onclick="goPage('tutorials')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <strong>Tutorials</strong>
+        <span>By medium and skill</span>
+      </div>
+      <div class="qa-card" onclick="goPage('trends')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <strong>Trend pulse</strong>
+        <span>Full detailed brief</span>
+      </div>
+      <div class="qa-card" onclick="goPage('studio')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        <strong>Studio setup</strong>
+        <span>Shooting & background ideas</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PLACEHOLDER MODULE PAGES (built in later phases) ══════════ -->
+<div class="page" id="pg-trends">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Daily update</div>
+    <h1 class="hero-title">Trend <em style="color:var(--dusty-rose)">pulse</em></h1>
+    <p class="hero-sub">Palettes, patterns & what's catching on right now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <h3>Module under construction</h3>
+      <p>The full trend pulse with live palette and pattern research builds here in the next phase.</p>
+      <span class="module-badge">Module 05</span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-gallery">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Find references</div>
+    <h1 class="hero-title">Inspiration <em style="color:var(--dusty-rose)">gallery</em></h1>
+    <p class="hero-sub">Upload or describe a page, or browse a book's general style.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <h3>Module under construction</h3>
+      <p>The page-matching upload flow and book galleries build here next.</p>
+      <span class="module-badge">Module 01</span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-patterns">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Your library</div>
+    <h1 class="hero-title">Pattern <em style="color:var(--dusty-rose)">bank</em></h1>
+    <p class="hero-sub">Browse by category or by where you'd use it.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <h3>Module under construction</h3>
+      <p>Swatches, how-to-draw steps, and marker pairings build here next.</p>
+      <span class="module-badge">Module 02</span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-ideas">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">What to post</div>
+    <h1 class="hero-title">Content <em style="color:var(--dusty-rose)">ideas</em></h1>
+    <p class="hero-sub">Relatable angles tied to what's working right now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <h3>Module under construction</h3>
+      <p>Trend-tied content angles for coloring and your other hobbies build here next.</p>
+      <span class="module-badge">Module 03</span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-tutorials">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Learn & grow</div>
+    <h1 class="hero-title"><em style="color:var(--dusty-rose)">Tutorials</em></h1>
+    <p class="hero-sub">By medium, by skill, or tied to what you're coloring now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <h3>Module under construction</h3>
+      <p>Marker, watercolor, gouache, acrylic, and pencil tracks build here next.</p>
+      <span class="module-badge">Module 04</span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-studio">
+  <div class="page-hero" style="background:var(--blush)">
+    <div class="hero-eyebrow" style="color:var(--dusty-rose)">Shoot & share</div>
+    <h1 class="hero-title">Studio <em style="color:var(--dusty-rose)">setup</em></h1>
+    <p class="hero-sub">Desk layouts, angles, backgrounds and themes for every format.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+      <h3>Module under construction</h3>
+      <p>Shooting setups for photo, video, text and audio posts build here next.</p>
+      <span class="module-badge">Module 09</span>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHT HOBBY HOMES -->
+<div class="page" id="pg-embroidery-home">
+  <div class="page-hero" style="background:#F1ECF7">
+    <div class="hero-eyebrow" style="color:var(--hobby-embroidery)">Embroidery</div>
+    <h1 class="hero-title">Monthly <em style="color:var(--hobby-embroidery)">calendar</em></h1>
+    <p class="hero-sub">Trend pulse and content ideas for paper embroidery.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>
+      <h3>Module under construction</h3>
+      <p>Embroidery trend pulse and content ideas build here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-lego-home">
+  <div class="page-hero" style="background:#FAF1DC">
+    <div class="hero-eyebrow" style="color:var(--hobby-lego)">Lego</div>
+    <h1 class="hero-title">Build <em style="color:var(--hobby-lego)">trends</em></h1>
+    <p class="hero-sub">Trend pulse and content ideas for set builds and reviews.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg>
+      <h3>Module under construction</h3>
+      <p>Lego trend pulse and content ideas build here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg-fiction-home">
+  <div class="page-hero" style="background:#EBF2F2">
+    <div class="hero-eyebrow" style="color:var(--hobby-fiction)">Fiction</div>
+    <h1 class="hero-title">Reading <em style="color:var(--hobby-fiction)">pulse</em></h1>
+    <p class="hero-sub">What's trending in BookTok and Bookstagram right now.</p>
+  </div>
+  <div class="page-inner" style="padding-top:16px">
+    <div class="coming-soon">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <h3>Module under construction</h3>
+      <p>Fiction trend pulse builds here in a later phase.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BOTTOM NAV ══════════ -->
+<nav id="bottom-nav">
+  <button class="nav-item active" data-page="home" onclick="goPage('home')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="nav-item" data-page="trends" onclick="goPage('trends')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <span>Trends</span>
+  </button>
+  <button class="nav-item" data-page="gallery" onclick="goPage('gallery')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    <span>Inspire</span>
+  </button>
+  <button class="nav-item" data-page="patterns" onclick="goPage('patterns')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Patterns</span>
+  </button>
+  <button class="nav-item" data-page="tutorials" onclick="goPage('tutorials')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    <span>Learn</span>
+  </button>
+  <button class="nav-item" data-page="studio" onclick="goPage('studio')">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+    <span>Studio</span>
+  </button>
+</nav>
+
+</div><!-- #app -->
+
+<script>
+const TODAY = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('home-date').textContent = TODAY;
+
+let currentHobby = 'coloring';
+
+/* ── HOBBY SWITCHING ─── */
+function switchHobby(hobby, btn){
+  currentHobby = hobby;
+  document.querySelectorAll('.hobby-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  if(hobby === 'coloring'){
+    goPage('coloring-home');
+  } else {
+    goPage(hobby+'-home');
+  }
+}
+
+function goHobbyHome(hobby){
+  document.querySelectorAll('.hobby-chip').forEach(c=>{
+    c.classList.toggle('active', c.dataset.hobby === hobby);
+  });
+  currentHobby = hobby;
+  if(hobby === 'coloring'){
+    goPage('coloring-home');
+  } else {
+    goPage(hobby+'-home');
+  }
+}
+
+/* ── PAGE NAVIGATION ─── */
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  const target = document.getElementById('pg-'+id);
+  if(target){
+    target.classList.add('active');
+    target.scrollTop = 0;
+  }
+  const navBtn = document.querySelector('.nav-item[data-page="'+id+'"]');
+  if(navBtn) navBtn.classList.add('active');
+
+  // bottom nav only shows for coloring's deep modules; hide for light hobby homes / home
+  const bottomNav = document.getElementById('bottom-nav');
+  const deepPages = ['trends','gallery','patterns','ideas','tutorials','studio'];
+  bottomNav.style.display = deepPages.includes(id) ? 'flex' : 'none';
+}
+
+goPage('home');
+</script>
+</body>
+</html>

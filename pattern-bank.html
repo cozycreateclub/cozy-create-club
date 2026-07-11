@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pattern Bank — Cozy Create Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF3E7;--cream-deep:#F3E9D8;--blush:#F5E6E0;
+  --coral:#E8542E;--coral-soft:#FBE2DA;--coral-mid:#F07050;
+  --lavender:#A89BC4;--lavender-soft:#EDEAF5;--lavender-mid:#C9C0DE;
+  --salmon:#F2998A;--salmon-soft:#FCEAE6;
+  --navy:#1A2238;--forest:#1F4A2E;--forest-soft:#E5EDE7;
+  --card:#FFFFFF;--card-warm:#FEFBF6;
+  --border:#EBE3D4;--border-strong:#DCD0BB;
+  --text-body:#3A3450;--text-muted:#8A8098;--text-light:#C4BBCF;
+  --r-sm:8px;--r-md:14px;--r-lg:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--cream);font-family:'Inter',sans-serif;color:var(--text-body)}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none;color:inherit}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,243,231,0.96);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text-muted);padding:6px 10px;border-radius:var(--r-sm);transition:background 0.12s}
+.back-btn:hover{background:var(--cream-deep)}
+.back-btn svg{width:15px;height:15px;stroke-width:2}
+.topbar-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy)}
+.topbar-title em{font-style:italic;color:var(--coral)}
+.ai-gen-btn{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;
+  background:var(--coral);color:#fff;border-radius:var(--r-sm);
+  font-size:12.5px;font-weight:500;white-space:nowrap;transition:opacity 0.15s;
+}
+.ai-gen-btn:active{opacity:0.85}
+.ai-gen-btn svg{width:14px;height:14px;stroke-width:2}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--card-warm);border-bottom:1px solid var(--border);padding:0 16px}
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.filter-row::-webkit-scrollbar{display:none}
+.f-chip{
+  padding:6px 13px;border-radius:20px;border:1px solid var(--border-strong);
+  font-size:12px;color:var(--text-muted);background:var(--card);
+  white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all 0.12s;
+}
+.f-chip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral);font-weight:500}
+.f-chip.on.lavender{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.filter-divider{width:1px;background:var(--border);flex-shrink:0;margin:4px 2px}
+.filter-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);padding:8px 4px;white-space:nowrap;align-self:center}
+
+/* ── SEARCH ── */
+.search-wrap{padding:12px 16px;background:var(--card-warm)}
+.search-input{
+  width:100%;padding:10px 14px 10px 36px;
+  background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);
+  font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;
+  transition:border-color 0.15s;
+}
+.search-input:focus{border-color:var(--coral)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-light)}
+
+/* ── COUNT BAR ── */
+.count-bar{padding:10px 20px;font-size:12px;color:var(--text-light);display:flex;align-items:center;justify-content:space-between}
+.count-bar span{color:var(--text-muted);font-weight:500}
+.sort-btn{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+.sort-btn svg{width:13px;height:13px;stroke-width:2}
+
+/* ── PATTERN GRID ── */
+.pattern-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px 32px}
+.p-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
+  overflow:hidden;cursor:pointer;transition:all 0.14s;
+}
+.p-card:active{transform:scale(0.98)}
+.p-card:hover{border-color:var(--coral);box-shadow:0 2px 12px rgba(232,84,46,0.1)}
+.p-swatch{aspect-ratio:1;background:var(--cream-deep);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.p-swatch svg{width:100%;height:100%}
+.p-tags{position:absolute;top:7px;left:7px;display:flex;gap:4px;flex-wrap:wrap}
+.p-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;background:rgba(250,243,231,0.92);color:var(--navy);backdrop-filter:blur(4px)}
+.p-tag.use{background:rgba(168,155,196,0.2);color:var(--lavender)}
+.p-info{padding:10px 11px 12px}
+.p-name{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:2px}
+.p-meta{font-size:11px;color:var(--text-light)}
+
+/* ── DETAIL DRAWER ── */
+.drawer-overlay{
+  display:none;position:fixed;inset:0;background:rgba(26,34,56,0.4);z-index:200;
+}
+.drawer-overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.drawer{
+  background:var(--card);border-radius:var(--r-lg) var(--r-lg) 0 0;
+  width:100%;max-width:600px;max-height:90dvh;overflow-y:auto;
+  padding:0 0 env(safe-area-inset-bottom);
+  animation:slideUp 0.22s ease;
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.drawer-handle{width:36px;height:4px;background:var(--border-strong);border-radius:2px;margin:12px auto 0}
+.drawer-swatch{width:100%;aspect-ratio:2/1;background:var(--cream-deep);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:12px}
+.drawer-swatch svg{width:100%;height:100%}
+.drawer-body{padding:20px 20px 8px}
+.drawer-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin-bottom:4px}
+.drawer-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.d-tag{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border-strong);color:var(--text-muted)}
+.d-tag.cat{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.d-tag.use{background:var(--lavender-soft);border-color:var(--lavender);color:var(--lavender)}
+.drawer-section{margin-bottom:18px}
+.drawer-section-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:8px}
+.steps-list{display:flex;flex-direction:column;gap:7px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.step-num{
+  width:20px;height:20px;border-radius:50%;background:var(--coral-soft);
+  color:var(--coral);font-size:11px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:13px;color:var(--text-body);line-height:1.55}
+.marker-row{display:flex;flex-wrap:wrap;gap:8px}
+.marker-chip{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card-warm)}
+.marker-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+.marker-info{display:flex;flex-direction:column}
+.marker-name{font-size:12px;font-weight:500;color:var(--navy)}
+.marker-hex{font-size:10px;color:var(--text-light)}
+.close-drawer{width:100%;padding:14px;font-size:13.5px;font-weight:500;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px}
+
+/* ── AI GENERATE MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,34,56,0.45);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:var(--r-lg);padding:22px;max-width:380px;width:100%}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px}
+.modal-sub{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
+.modal-field{margin-bottom:12px}
+.modal-label{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:5px;display:block}
+.modal-input{width:100%;padding:10px 12px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:'Inter',sans-serif;color:var(--text-body);outline:none;transition:border-color 0.15s}
+.modal-input:focus{border-color:var(--coral)}
+.modal-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.m-chip{padding:5px 11px;border-radius:20px;border:1px solid var(--border-strong);font-size:12px;color:var(--text-muted);cursor:pointer;transition:all 0.12s}
+.m-chip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.btn-main{flex:1;padding:11px;font-size:13px;font-weight:500;border-radius:var(--r-sm);background:var(--coral);color:#fff}
+.btn-cancel{padding:11px 16px;font-size:13px;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--r-sm);background:transparent}
+.ai-output{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-top:14px;font-size:13px;color:var(--text-body);line-height:1.7;display:none;white-space:pre-wrap;max-height:280px;overflow-y:auto}
+.ai-output b,.ai-output strong{font-weight:500;color:var(--navy)}
+.loader{display:none;flex-direction:column;align-items:center;padding:20px;gap:10px}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--coral);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-size:12.5px;color:var(--text-muted)}
+
+/* ── DESKTOP ── */
+@media(min-width:900px){
+  .pattern-grid{grid-template-columns:repeat(4,1fr);padding:0 24px 40px}
+  .filter-bar{padding:0 24px}
+  .search-wrap{padding:12px 24px}
+  .count-bar{padding:10px 24px}
+  .topbar{padding:14px 28px}
+  .drawer-overlay{align-items:center}
+  .drawer{border-radius:var(--r-lg);max-height:80dvh}
+}
+@media(min-width:1200px){
+  .pattern-grid{grid-template-columns:repeat(5,1fr)}
+}
+
+/* ── EMPTY STATE ── */
+.empty{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 24px;color:var(--text-light)}
+.empty.show{display:flex}
+.empty svg{width:32px;height:32px;stroke-width:1.3;margin-bottom:12px;opacity:0.4}
+.empty p{font-size:13px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="topbar-title">Pattern <em>bank</em></div>
+  </div>
+  <button class="ai-gen-btn" onclick="openAIModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+    Generate pattern
+  </button>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-row" id="filter-row">
+    <span class="filter-label">Category</span>
+    <div class="f-chip on" data-filter="cat" data-val="all" onclick="setFilter('cat','all',this)">All</div>
+    <div class="f-chip" data-filter="cat" data-val="floral" onclick="setFilter('cat','floral',this)">🌸 Floral</div>
+    <div class="f-chip" data-filter="cat" data-val="geometric" onclick="setFilter('cat','geometric',this)">◇ Geometric</div>
+    <div class="f-chip" data-filter="cat" data-val="texture" onclick="setFilter('cat','texture',this)">≋ Texture</div>
+    <div class="f-chip" data-filter="cat" data-val="border" onclick="setFilter('cat','border',this)">⬚ Border</div>
+    <div class="f-chip" data-filter="cat" data-val="novelty" onclick="setFilter('cat','novelty',this)">✦ Novelty</div>
+    <div class="filter-divider"></div>
+    <span class="filter-label">Use</span>
+    <div class="f-chip lavender" data-filter="use" data-val="all-use" onclick="setFilter('use','all-use',this)">All</div>
+    <div class="f-chip lavender" data-filter="use" data-val="background" onclick="setFilter('use','background',this)">Background</div>
+    <div class="f-chip lavender" data-filter="use" data-val="clothing" onclick="setFilter('use','clothing',this)">Clothing</div>
+    <div class="f-chip lavender" data-filter="use" data-val="border" onclick="setFilter('use','border',this)">Border</div>
+    <div class="f-chip lavender" data-filter="use" data-val="filler" onclick="setFilter('use','filler',this)">Small filler</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  <input type="text" class="search-input" id="search-input" placeholder="Search patterns…" oninput="renderGrid()">
+</div>
+
+<!-- COUNT BAR -->
+<div class="count-bar">
+  <div><span id="count-num">30</span> patterns</div>
+  <button class="sort-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+    Sort
+  </button>
+</div>
+
+<!-- GRID -->
+<div class="pattern-grid" id="pattern-grid"></div>
+<div class="empty" id="empty-state">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  <p>No patterns match those filters.<br>Try adjusting or generate a new one.</p>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawer" onclick="closeDrawer(event)">
+  <div class="drawer" id="drawer-box">
+    <div class="drawer-handle"></div>
+    <div class="drawer-swatch" id="d-swatch"></div>
+    <div class="drawer-body">
+      <div class="drawer-name" id="d-name"></div>
+      <div class="drawer-cats" id="d-cats"></div>
+      <div class="drawer-section">
+        <div class="drawer-section-label">How to draw</div>
+        <div class="steps-list" id="d-steps"></div>
+      </div>
+      <div class="drawer-section">
+        <div class="drawer-section-label">Marker colors that work well</div>
+        <div class="marker-row" id="d-markers"></div>
+      </div>
+    </div>
+    <button class="close-drawer" onclick="document.getElementById('drawer').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<!-- AI GENERATE MODAL -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal-box">
+    <div class="modal-title">Generate a pattern</div>
+    <div class="modal-sub">Describe what you need and Claude will suggest a new pattern with swatch, how-to steps, and marker colors.</div>
+    <div class="modal-field">
+      <label class="modal-label">Describe the pattern</label>
+      <input type="text" class="modal-input" id="ai-prompt" placeholder="e.g. tiny mushrooms on a cream background, repeating grid">
+    </div>
+    <div class="modal-label">Category</div>
+    <div class="modal-chips" id="ai-cat-chips">
+      <div class="m-chip" onclick="toggleAIChip(this,'cat')">Floral</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'cat')">Geometric</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'cat')">Texture</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'cat')">Border</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'cat')">Novelty</div>
+    </div>
+    <div class="modal-label">Use case</div>
+    <div class="modal-chips" id="ai-use-chips">
+      <div class="m-chip" onclick="toggleAIChip(this,'use')">Background</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'use')">Clothing</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'use')">Border</div>
+      <div class="m-chip" onclick="toggleAIChip(this,'use')">Small filler</div>
+    </div>
+    <div class="loader" id="ai-loader">
+      <div class="spinner"></div>
+      <div class="load-txt">Generating your pattern…</div>
+    </div>
+    <div class="ai-output" id="ai-output"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAIModal()">Cancel</button>
+      <button class="btn-main" onclick="runAIGenerate()">Generate</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PATTERN DATA
+   Each pattern: id, name, cat, use[], steps[], markers[], svgFn
+═══════════════════════════════════════════════════════════ */
+const PATTERNS = [
+  /* ── FLORAL ── */
+  {id:1,name:"Tiny daisies",cat:"floral",use:["background","filler"],
+   steps:["Draw a small circle (4–5mm) for the centre, fill with yellow","Add 6–8 short petals around the circle with tiny strokes","Scatter across the area leaving equal space between each flower","Add a tiny leaf beside every third daisy"],
+   markers:[{n:"Petal white",h:"#F5F0E8"},{n:"Sunny yellow",h:"#F5C842"},{n:"Leaf green",h:"#5A8C5A"},{n:"Blush pink",h:"#F2A0A0"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FDF8F0"/>
+    ${daisy(20,20)} ${daisy(55,18)} ${daisy(90,22)} ${daisy(10,55)} ${daisy(38,50)} ${daisy(72,48)} ${daisy(105,52)}
+    ${daisy(22,85)} ${daisy(58,82)} ${daisy(93,88)} ${daisy(38,105)} ${daisy(78,108)}</svg>`},
+  {id:2,name:"Cherry blossom scatter",cat:"floral",use:["background","clothing"],
+   steps:["Draw a 5-petal flower: each petal is a rounded teardrop shape","Make flowers in clusters of 3–4, varying sizes slightly","Add thin branching lines between clusters","Use two pink tones — light for petals, slightly deeper for centres"],
+   markers:[{n:"Sakura pink",h:"#F7C5C5"},{n:"Deep petal",h:"#E8909A"},{n:"Branch brown",h:"#8B5E4A"},{n:"Cream bg",h:"#FAF3E7"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FDF8F5"/>
+    ${blossom(25,30,9)} ${blossom(60,20,7)} ${blossom(95,35,8)} ${blossom(15,70,8)} ${blossom(50,65,10)} ${blossom(85,72,7)} ${blossom(30,100,8)} ${blossom(70,95,9)}
+    <line x1="25" y1="30" x2="60" y2="20" stroke="#8B5E4A" stroke-width="0.8"/>
+    <line x1="60" y1="20" x2="95" y2="35" stroke="#8B5E4A" stroke-width="0.8"/>
+    <line x1="15" y1="70" x2="50" y2="65" stroke="#8B5E4A" stroke-width="0.8"/>
+    <line x1="50" y1="65" x2="85" y2="72" stroke="#8B5E4A" stroke-width="0.8"/></svg>`},
+  {id:3,name:"Strawberry fields",cat:"floral",use:["background","clothing"],
+   steps:["Draw a plump heart shape for each berry","Add tiny white dots for seeds in a scattered pattern","Draw a small green star crown on top","Pair with tiny white flowers between berries"],
+   markers:[{n:"Berry red",h:"#D94040"},{n:"Seed white",h:"#F8F4EC"},{n:"Leaf green",h:"#4A8C5A"},{n:"Flower white",h:"#FFFFFF"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEF8F5"/>
+    ${strawberry(22,22)} ${strawberry(65,18)} ${strawberry(105,25)} ${strawberry(10,60)} ${strawberry(45,58)} ${strawberry(85,55)} ${strawberry(115,65)}
+    ${strawberry(25,95)} ${strawberry(65,92)} ${strawberry(100,98)}</svg>`},
+  {id:4,name:"Wildflower meadow",cat:"floral",use:["background"],
+   steps:["Draw tall thin stems at slightly different heights","Add different flower heads: dots, X shapes, small 4-petal blooms","Vary the heights — some short some tall — for a natural look","Fill gaps with tiny leaves and grass blades"],
+   markers:[{n:"Lavender",h:"#A89BC4"},{n:"Meadow green",h:"#5A8C6A"},{n:"Sunflower",h:"#F0C040"},{n:"Coral",h:"#E8542E"},{n:"Sky blue",h:"#8BBEDC"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F0F8F0"/>
+    ${meadowFlower(15,30,35,"#A89BC4")} ${meadowFlower(30,20,45,"#E8542E")} ${meadowFlower(50,35,30,"#F0C040")}
+    ${meadowFlower(68,15,50,"#8BBEDC")} ${meadowFlower(85,30,38,"#A89BC4")} ${meadowFlower(100,22,42,"#E8542E")}
+    ${meadowFlower(20,80,35,"#F0C040")} ${meadowFlower(45,75,40,"#A89BC4")} ${meadowFlower(70,78,32,"#8BBEDC")} ${meadowFlower(95,80,38,"#E8542E")}</svg>`},
+  {id:5,name:"Magnolia branch",cat:"floral",use:["background","clothing"],
+   steps:["Draw a curved branch from corner to corner","Add 3–4 large magnolia blooms: 6 broad petals in a cup shape","Include some closed buds — pointed ovals on stems","Use warm white/cream for petals with pale purple-pink shading"],
+   markers:[{n:"Petal cream",h:"#F5EFE0"},{n:"Petal blush",h:"#E8C5C5"},{n:"Branch grey",h:"#7A7870"},{n:"Bud tip",h:"#C4A0A0"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAFAF8"/>
+    <path d="M5 115 Q40 60 75 40 Q100 25 118 10" fill="none" stroke="#7A7870" stroke-width="2"/>
+    ${magnolia(40,75)} ${magnolia(75,45)} ${magnolia(100,25)}</svg>`},
+  {id:6,name:"Lazy sunflowers",cat:"floral",use:["background","clothing"],
+   steps:["Draw the centre: a circle filled with crosshatch dots","Add 12–14 elongated oval petals around the centre","Alternate slightly shorter petals between the main ones","Add pairs of broad leaves on a thick stem below"],
+   markers:[{n:"Petal gold",h:"#E8B830"},{n:"Centre brown",h:"#5C3A1E"},{n:"Leaf green",h:"#3D7A40"},{n:"Shadow amber",h:"#C88C20"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FFFBF0"/>
+    ${sunflower(35,40,22)} ${sunflower(88,35,18)} ${sunflower(60,90,20)}</svg>`},
+
+  /* ── GEOMETRIC ── */
+  {id:7,name:"Checkerboard classic",cat:"geometric",use:["background","clothing"],
+   steps:["Draw a grid of equally spaced squares","Fill alternating squares with your accent colour","Leave the others as the base paper colour","Tip: use a ruler or grid lines lightly in pencil first"],
+   markers:[{n:"Navy",h:"#1A2238"},{n:"Cream",h:"#FAF3E7"},{n:"Dusty rose",h:"#D4A5A5"},{n:"Sage",h:"#7A9E76"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="120" fill="#FAF3E7"/>
+    ${checker(0,0)}${checker(20,0)}${checker(40,0)}${checker(60,0)}${checker(80,0)}${checker(100,0)}
+    ${checker(10,10)}${checker(30,10)}${checker(50,10)}${checker(70,10)}${checker(90,10)}${checker(110,10)}
+    ${checker(0,20)}${checker(20,20)}${checker(40,20)}${checker(60,20)}${checker(80,20)}${checker(100,20)}
+    ${checker(10,30)}${checker(30,30)}${checker(50,30)}${checker(70,30)}${checker(90,30)}${checker(110,30)}
+    ${checker(0,40)}${checker(20,40)}${checker(40,40)}${checker(60,40)}${checker(80,40)}${checker(100,40)}
+    ${checker(10,50)}${checker(30,50)}${checker(50,50)}${checker(70,50)}${checker(90,50)}${checker(110,50)}
+    ${checker(0,60)}${checker(20,60)}${checker(40,60)}${checker(60,60)}${checker(80,60)}${checker(100,60)}
+    ${checker(10,70)}${checker(30,70)}${checker(50,70)}${checker(70,70)}${checker(90,70)}${checker(110,70)}
+    ${checker(0,80)}${checker(20,80)}${checker(40,80)}${checker(60,80)}${checker(80,80)}${checker(100,80)}
+    ${checker(10,90)}${checker(30,90)}${checker(50,90)}${checker(70,90)}${checker(90,90)}${checker(110,90)}
+    ${checker(0,100)}${checker(20,100)}${checker(40,100)}${checker(60,100)}${checker(80,100)}${checker(100,100)}
+    ${checker(10,110)}${checker(30,110)}${checker(50,110)}${checker(70,110)}${checker(90,110)}${checker(110,110)}</svg>`},
+  {id:8,name:"Moroccan tile",cat:"geometric",use:["background","filler"],
+   steps:["Start with a cross shape in the centre","Draw four pointed petals between the cross arms","Add a smaller diamond at each intersection","Repeat in a tight grid — the shapes interlock exactly"],
+   markers:[{n:"Terracotta",h:"#C4603A"},{n:"Teal",h:"#3A8C8A"},{n:"Cream",h:"#F8F0E0"},{n:"Navy",h:"#1A2238"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F8F0E0"/>
+    ${moroccan(20,20)} ${moroccan(60,20)} ${moroccan(100,20)} ${moroccan(40,50)} ${moroccan(80,50)} ${moroccan(20,80)} ${moroccan(60,80)} ${moroccan(100,80)} ${moroccan(40,110)} ${moroccan(80,110)}</svg>`},
+  {id:9,name:"Diagonal stripes",cat:"geometric",use:["background","clothing","border"],
+   steps:["Draw parallel diagonal lines at 45° across the area","Space them evenly — about 6–8mm apart","Fill alternate bands with colour","For a double stripe: add a thin second line beside each main line"],
+   markers:[{n:"Stripe main",h:"#E8542E"},{n:"Stripe bg",h:"#FAF3E7"},{n:"Alt stripe",h:"#A89BC4"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAF3E7"/>
+    ${[...Array(16)].map((_,i)=>`<line x1="${i*16-40}" y1="0" x2="${i*16+80}" y2="120" stroke="#E8542E" stroke-width="7"/>`).join('')}
+    ${[...Array(16)].map((_,i)=>`<line x1="${i*16-32}" y1="0" x2="${i*16+88}" y2="120" stroke="#F5C8BE" stroke-width="3"/>`).join('')}</svg>`},
+  {id:10,name:"Polka dot classic",cat:"geometric",use:["background","clothing","filler"],
+   steps:["Mark a regular grid with light pencil dots","Draw a filled circle at each grid point — aim for consistent size","Leave equal white space between each dot","For a retro look: alternate two dot sizes in a staggered grid"],
+   markers:[{n:"Dot coral",h:"#E8542E"},{n:"Dot lavender",h:"#A89BC4"},{n:"Dot navy",h:"#1A2238"},{n:"Bg cream",h:"#FAF3E7"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAF3E7"/>
+    ${polka(15,15,"#E8542E")} ${polka(40,15,"#A89BC4")} ${polka(65,15,"#E8542E")} ${polka(90,15,"#A89BC4")} ${polka(115,15,"#E8542E")}
+    ${polka(27,35,"#1A2238")} ${polka(52,35,"#E8542E")} ${polka(77,35,"#1A2238")} ${polka(102,35,"#E8542E")}
+    ${polka(15,55,"#A89BC4")} ${polka(40,55,"#1A2238")} ${polka(65,55,"#A89BC4")} ${polka(90,55,"#1A2238")} ${polka(115,55,"#A89BC4")}
+    ${polka(27,75,"#E8542E")} ${polka(52,75,"#A89BC4")} ${polka(77,75,"#E8542E")} ${polka(102,75,"#A89BC4")}
+    ${polka(15,95,"#1A2238")} ${polka(40,95,"#E8542E")} ${polka(65,95,"#1A2238")} ${polka(90,95,"#E8542E")} ${polka(115,95,"#1A2238")}
+    ${polka(27,115,"#A89BC4")} ${polka(52,115,"#1A2238")} ${polka(77,115,"#A89BC4")} ${polka(102,115,"#1A2238")}</svg>`},
+  {id:11,name:"Argyle diamonds",cat:"geometric",use:["background","clothing"],
+   steps:["Draw a large diamond with thin pencil lines","Add a smaller diamond centred inside it","Cross-hatch the space between with diagonal lines","Repeat in a tight brick pattern, alternating colour families"],
+   markers:[{n:"Diamond A",h:"#A89BC4"},{n:"Diamond B",h:"#E8542E"},{n:"Line grey",h:"#B8B0C8"},{n:"Bg cream",h:"#F8F4EE"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F8F4EE"/>
+    ${argyle(30,30,"#A89BC4")} ${argyle(90,30,"#E8542E")} ${argyle(60,60,"#A89BC4")} ${argyle(30,90,"#E8542E")} ${argyle(90,90,"#A89BC4")}</svg>`},
+  {id:12,name:"Scallop tiles",cat:"geometric",use:["background","border"],
+   steps:["Draw overlapping semicircles in rows","Each new row starts halfway between the circles above","Fill alternating rows with a second colour","Add a small circle dot at each scallop base"],
+   markers:[{n:"Scallop A",h:"#F2998A"},{n:"Scallop B",h:"#FAF3E7"},{n:"Outline",h:"#DCD0BB"},{n:"Dot accent",h:"#A89BC4"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FDF8F5"/>
+    ${scallops()}</svg>`},
+
+  /* ── TEXTURE ── */
+  {id:13,name:"Linen weave",cat:"texture",use:["background","clothing"],
+   steps:["Draw closely-spaced horizontal lines across the area","Add vertical lines at the same spacing to form a grid","At each intersection draw a tiny square or dot to suggest weave","Keep lines light and even — the subtlety is the point"],
+   markers:[{n:"Thread warm",h:"#C8A87A"},{n:"Thread light",h:"#E8D8C0"},{n:"Shadow",h:"#A08860"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F5ECE0"/>
+    ${[...Array(13)].map((_,i)=>`<line x1="0" y1="${i*10}" x2="120" y2="${i*10}" stroke="#C8A87A" stroke-width="0.5"/>`).join('')}
+    ${[...Array(13)].map((_,i)=>`<line x1="${i*10}" y1="0" x2="${i*10}" y2="120" stroke="#A08860" stroke-width="0.4"/>`).join('')}
+    ${[...Array(12)].map((_,i)=>[...Array(12)].map((_,j)=>`<circle cx="${i*10+5}" cy="${j*10+5}" r="0.8" fill="#C8A87A"/>`).join('')).join('')}</svg>`},
+  {id:14,name:"Honeycomb",cat:"texture",use:["background","filler"],
+   steps:["Draw a regular hexagon (6 equal sides)","Tile it edge-to-edge in rows — offset each row by half a hex width","Fill alternate hexagons for a 2-tone effect","Optional: add a tiny dot in the centre of each hex"],
+   markers:[{n:"Hex honey",h:"#E8B830"},{n:"Hex light",h:"#F8E8C0"},{n:"Outline",h:"#C89820"},{n:"Centre dot",h:"#8B6010"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEFAF0"/>
+    ${honeycomb()}</svg>`},
+  {id:15,name:"Crosshatch shade",cat:"texture",use:["filler","clothing"],
+   steps:["Draw parallel diagonal lines at 45°","Add a second set of lines at 45° in the opposite direction","For dense shade: add a third set of vertical lines","Vary the line spacing for light, medium, or heavy shading"],
+   markers:[{n:"Line dark",h:"#3A3450"},{n:"Line mid",h:"#7A7090"},{n:"Line light",h:"#C4BBCF"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAFAF8"/>
+    ${[...Array(17)].map((_,i)=>`<line x1="${i*14-40}" y1="0" x2="${i*14+80}" y2="120" stroke="#7A7090" stroke-width="0.8"/>`).join('')}
+    ${[...Array(17)].map((_,i)=>`<line x1="${i*14+80}" y1="0" x2="${i*14-40}" y2="120" stroke="#3A3450" stroke-width="0.6"/>`).join('')}</svg>`},
+  {id:16,name:"Watercolour wash dots",cat:"texture",use:["background","filler"],
+   steps:["Place irregular dots of varied sizes across the surface","Blend the edges of each dot outward with a damp brush technique","Cluster some dots together, leaving other areas airy","Allow the dots to partially overlap for a layered watercolour effect"],
+   markers:[{n:"Rose wash",h:"#F2B0A8"},{n:"Lavender wash",h:"#C4B8D8"},{n:"Sky wash",h:"#A8C8E0"},{n:"Sage wash",h:"#A8C4A8"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEFCFA"/>
+    ${washDots()}</svg>`},
+  {id:17,name:"Brick wall",cat:"texture",use:["background"],
+   steps:["Draw equal rectangles (2:1 ratio) in horizontal rows","Offset each row by half a brick width","Draw light mortar lines between bricks (leave a small gap)","Shade each brick with a subtle gradient from top to bottom"],
+   markers:[{n:"Brick terra",h:"#C4603A"},{n:"Brick shadow",h:"#A04A28"},{n:"Mortar",h:"#E8D8C8"},{n:"Highlight",h:"#D87850"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#E8D8C8"/>
+    ${bricks()}</svg>`},
+
+  /* ── BORDER ── */
+  {id:18,name:"Stitched dashes",cat:"border",use:["border"],
+   steps:["Draw a straight or curved line as your border path","Add evenly-spaced rectangular dashes along it","Alternate the angle of dashes for a running-stitch effect","Add tiny cross-stitch X marks at regular intervals"],
+   markers:[{n:"Stitch coral",h:"#E8542E"},{n:"Stitch navy",h:"#1A2238"},{n:"Stitch cream",h:"#F5EDDA"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEFCF8"/>
+    <rect x="8" y="8" width="104" height="104" rx="4" fill="none" stroke="#E8542E" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <rect x="14" y="14" width="92" height="92" rx="3" fill="none" stroke="#1A2238" stroke-width="0.8" stroke-dasharray="3 5"/>
+    ${[...Array(8)].map((_,i)=>`<path d="M${20+i*12},12 L${24+i*12},8" stroke="#E8542E" stroke-width="1.5"/><path d="M${20+i*12},8 L${24+i*12},12" stroke="#E8542E" stroke-width="1.5"/>`).join('')}
+    ${[...Array(8)].map((_,i)=>`<path d="M${20+i*12},112 L${24+i*12},108" stroke="#E8542E" stroke-width="1.5"/><path d="M${20+i*12},108 L${24+i*12},112" stroke="#E8542E" stroke-width="1.5"/>`).join('')}</svg>`},
+  {id:19,name:"Botanical vine border",cat:"border",use:["border"],
+   steps:["Draw a wavy vine as the base line","Add small oval leaves alternating left and right along the vine","Place tiny flower buds at intervals — 3 petals or a dot cluster","Curl the vine ends into spirals where it terminates"],
+   markers:[{n:"Vine green",h:"#3D6B40"},{n:"Leaf light",h:"#7AB07A"},{n:"Flower pink",h:"#E8909A"},{n:"Flower yellow",h:"#F5C842"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F8FBF5"/>
+    <path d="M5 20 Q20 10 35 20 Q50 30 65 20 Q80 10 95 20 Q110 30 118 22" fill="none" stroke="#3D6B40" stroke-width="1.5"/>
+    <path d="M5 100 Q20 90 35 100 Q50 110 65 100 Q80 90 95 100 Q110 110 118 98" fill="none" stroke="#3D6B40" stroke-width="1.5"/>
+    ${vineLeaves()}</svg>`},
+  {id:20,name:"Wave border",cat:"border",use:["border","filler"],
+   steps:["Draw a continuous S-curve wave across the border area","Add a second wave offset by half a wavelength below it","Fill the space between the waves with a solid colour","Optionally add small dots above the top wave crest"],
+   markers:[{n:"Wave blue",h:"#6AB0D0"},{n:"Wave fill",h:"#B8DCF0"},{n:"Dot accent",h:"#1A2238"},{n:"Bg cream",h:"#FAFCFE"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAFCFE"/>
+    <path d="M0 30 Q15 15 30 30 Q45 45 60 30 Q75 15 90 30 Q105 45 120 30 L120 45 Q105 60 90 45 Q75 30 60 45 Q45 60 30 45 Q15 30 0 45Z" fill="#B8DCF0"/>
+    <path d="M0 75 Q15 60 30 75 Q45 90 60 75 Q75 60 90 75 Q105 90 120 75 L120 90 Q105 105 90 90 Q75 75 60 90 Q45 105 30 90 Q15 75 0 90Z" fill="#6AB0D0" opacity="0.6"/>
+    ${[...Array(8)].map((_,i)=>`<circle cx="${7+i*15}" cy="${22-Math.sin(i*0.8)*6}" r="1.5" fill="#1A2238"/>`).join('')}</svg>`},
+
+  /* ── NOVELTY ── */
+  {id:21,name:"Tiny stars",cat:"novelty",use:["background","filler","clothing"],
+   steps:["Draw 5-pointed stars of varying sizes — about 3–8mm","Scatter them at different angles across the surface","Alternate solid filled stars with outline-only stars","Add tiny 4-point sparkle crosses between the larger stars"],
+   markers:[{n:"Star gold",h:"#E8C030"},{n:"Star coral",h:"#E8542E"},{n:"Star lavender",h:"#A89BC4"},{n:"Sparkle white",h:"#F8F4EC"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#1A2238"/>
+    ${star(20,20,7,"#E8C030")} ${star(55,15,5,"#A89BC4",true)} ${star(90,22,8,"#E8542E")} ${star(10,55,5,"#E8C030",true)}
+    ${star(38,50,9,"#A89BC4")} ${star(70,48,6,"#E8C030",true)} ${star(105,52,7,"#E8542E")}
+    ${star(25,85,8,"#A89BC4")} ${star(60,82,5,"#E8C030")} ${star(95,88,7,"#A89BC4",true)}
+    ${sparkle(42,28)} ${sparkle(75,35)} ${sparkle(15,72)} ${sparkle(50,100)} ${sparkle(85,62)}</svg>`},
+  {id:22,name:"Tiny mushrooms",cat:"novelty",use:["background","filler"],
+   steps:["Draw a rounded dome for the cap","Add a rectangular stalk below with curved sides","Place 2–3 white oval spots on the cap","Scatter at different sizes; add tiny grass blades at the base"],
+   markers:[{n:"Cap red",h:"#D94040"},{n:"Stalk cream",h:"#F5EBD8"},{n:"Spot white",h:"#FFFFFF"},{n:"Grass green",h:"#5A8C5A"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#EFF8EE"/>
+    ${mushroom(20,65,14)} ${mushroom(55,58,18)} ${mushroom(92,62,12)} ${mushroom(38,100,10)} ${mushroom(75,95,15)} ${mushroom(8,100,8)} ${mushroom(108,90,10)}</svg>`},
+  {id:23,name:"Raindrop scatter",cat:"novelty",use:["background","clothing"],
+   steps:["Draw a teardrop shape: circle bottom, pointed top","Scatter at random angles across the surface","Use 2–3 blues from light to deep","Add a tiny horizontal highlight line inside each drop"],
+   markers:[{n:"Rain deep",h:"#4A80C0"},{n:"Rain mid",h:"#7AB0E0"},{n:"Rain light",h:"#B8D8F8"},{n:"Highlight",h:"#DCEEFF"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F0F6FE"/>
+    ${raindrop(15,20,10,"#4A80C0")} ${raindrop(45,12,8,"#7AB0E0")} ${raindrop(80,18,12,"#4A80C0")} ${raindrop(108,25,9,"#B8D8F8")}
+    ${raindrop(8,55,11,"#7AB0E0")} ${raindrop(35,50,8,"#B8D8F8")} ${raindrop(65,48,13,"#4A80C0")} ${raindrop(98,55,9,"#7AB0E0")}
+    ${raindrop(22,90,9,"#B8D8F8")} ${raindrop(52,85,12,"#4A80C0")} ${raindrop(85,92,8,"#7AB0E0")} ${raindrop(112,88,11,"#B8D8F8")}</svg>`},
+  {id:24,name:"Cloud & sun",cat:"novelty",use:["background","clothing"],
+   steps:["Draw a sun: a circle with short radiating lines","Draw a cloud with overlapping bumpy circles"],
+   markers:[{n:"Sun yellow",h:"#F5C030"},{n:"Cloud white",h:"#F8F8F8"},{n:"Sky blue",h:"#C0DEFF"},{n:"Sun orange",h:"#F09030"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#C0DEFF"/>
+    ${cloudSun(30,35)} ${cloudSun(85,25,0.7)} ${cloudSun(55,80,0.85)}</svg>`},
+  {id:25,name:"Tiny hearts",cat:"novelty",use:["background","clothing","filler"],
+   steps:["Draw two small circles side by side","Extend the bottom into a V point","Vary sizes: large hearts surrounded by tiny ones","Scatter at different angles for a playful feel"],
+   markers:[{n:"Heart coral",h:"#E8542E"},{n:"Heart pink",h:"#F2998A"},{n:"Heart lavender",h:"#A89BC4"},{n:"Bg cream",h:"#FEF8F5"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEF8F5"/>
+    ${heart(20,22,9,"#E8542E")} ${heart(55,18,7,"#A89BC4")} ${heart(90,24,10,"#F2998A")} ${heart(8,58,7,"#E8542E")}
+    ${heart(38,52,11,"#A89BC4")} ${heart(72,50,8,"#E8542E")} ${heart(108,55,9,"#F2998A")}
+    ${heart(25,88,8,"#F2998A")} ${heart(60,84,11,"#E8542E")} ${heart(95,90,7,"#A89BC4")} ${heart(15,110,6,"#E8542E")} ${heart(75,112,8,"#F2998A")}</svg>`},
+  {id:26,name:"Smiley faces",cat:"novelty",use:["filler","clothing"],
+   steps:["Draw a circle","Add two small filled circles for eyes","Draw a curved arc for the smile","Optional: add rosy cheek circles in blush"],
+   markers:[{n:"Face yellow",h:"#F5D060"},{n:"Eyes navy",h:"#1A2238"},{n:"Cheeks pink",h:"#F2A0A0"},{n:"Outline",h:"#3A3450"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FEF8E8"/>
+    ${smiley(22,22,13)} ${smiley(65,18,10)} ${smiley(100,26,12)} ${smiley(12,65,11)} ${smiley(48,62,14)} ${smiley(85,58,10)} ${smiley(115,68,11)}
+    ${smiley(28,98,10)} ${smiley(68,100,13)} ${smiley(104,95,11)}</svg>`},
+
+  /* ── MORE GEOMETRIC ── */
+  {id:27,name:"Houndstooth",cat:"geometric",use:["background","clothing"],
+   steps:["Draw an irregular quadrilateral with a curved notch on one side","Repeat in a 2x2 interlocking tile","Alternate black and white (or two contrasting colours)","The key is that each piece locks perfectly into its neighbours"],
+   markers:[{n:"Black",h:"#1A2238"},{n:"White",h:"#F8F4EC"},{n:"Warm alt",h:"#E8C0A0"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#F8F4EC"/>
+    ${houndstooth()}</svg>`},
+  {id:28,name:"Triangle tessellation",cat:"geometric",use:["background"],
+   steps:["Draw equilateral triangles in a grid","Fill with alternating colours in groups of three (light, mid, dark)","The illusion of 3D cubes emerges with three tones","Keep edges sharp and lines clean — precision matters here"],
+   markers:[{n:"Light face",h:"#E8D8C0"},{n:"Mid face",h:"#C4A078"},{n:"Dark face",h:"#8B5E4A"},{n:"Edge",h:"#6A4030"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#E8D8C0"/>
+    ${triangles()}</svg>`},
+  {id:29,name:"Windowpane grid",cat:"geometric",use:["background","clothing"],
+   steps:["Draw a regular grid of thin lines both vertical and horizontal","Space them about 15–20mm apart","Add a second grid at 45° over the first for a plaid effect","Fill the small squares at intersections with a tiny accent dot"],
+   markers:[{n:"Line navy",h:"#1A2238"},{n:"Line coral",h:"#E8542E"},{n:"Dot accent",h:"#A89BC4"},{n:"Bg cream",h:"#FAF3E7"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAF3E7"/>
+    ${[...Array(7)].map((_,i)=>`<line x1="${i*20}" y1="0" x2="${i*20}" y2="120" stroke="#1A2238" stroke-width="${i%3===0?1.5:0.5}"/>`).join('')}
+    ${[...Array(7)].map((_,i)=>`<line x1="0" y1="${i*20}" x2="120" y2="${i*20}" stroke="#E8542E" stroke-width="${i%3===0?1.5:0.5}"/>`).join('')}
+    ${[...Array(6)].map((_,i)=>[...Array(6)].map((_,j)=>`<circle cx="${i*20}" cy="${j*20}" r="1.8" fill="#A89BC4"/>`).join('')).join('')}</svg>`},
+  {id:30,name:"Half-drop circles",cat:"geometric",use:["background","clothing"],
+   steps:["Draw circles in a regular grid","Offset every other column downward by half the circle height","Allow circles to gently touch or slightly overlap","Use a gradient or two tones within each circle for depth"],
+   markers:[{n:"Circle A",h:"#F2998A"},{n:"Circle B",h:"#A89BC4"},{n:"Circle C",h:"#E8C030"},{n:"Bg",h:"#FAF3E7"}],
+   svgFn:()=>`<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#FAF3E7"/>
+    ${halfDropCircles()}</svg>`},
+];
+
+/* ═══════════════════════════════════════════════════════════
+   SVG HELPER FUNCTIONS
+═══════════════════════════════════════════════════════════ */
+function daisy(x,y){return `<g transform="translate(${x},${y})"><circle r="3" fill="#F5C842"/>${[...Array(7)].map((_,i)=>{const a=i*51.4*(Math.PI/180);return `<ellipse cx="${Math.cos(a)*6}" cy="${Math.sin(a)*6}" rx="2.5" ry="1.5" transform="rotate(${i*51.4})" fill="#F8F0E8"/>`}).join('')}</g>`}
+function blossom(x,y,r){return `<g transform="translate(${x},${y})">${[...Array(5)].map((_,i)=>{const a=i*72*(Math.PI/180);return `<ellipse cx="${Math.cos(a)*r}" cy="${Math.sin(a)*r}" rx="${r*0.5}" ry="${r*0.3}" transform="rotate(${i*72})" fill="#F7C5C5" stroke="#E8909A" stroke-width="0.3"/>`}).join('')}<circle r="${r*0.2}" fill="#F5C842"/></g>`}
+function strawberry(x,y){return `<g transform="translate(${x},${y})"><path d="M0,-7 C-5,-7 -7,0 -4,5 Q0,9 4,5 C7,0 5,-7 0,-7Z" fill="#D94040"/>${[...Array(5)].map((_,i)=>`<circle cx="${-2+i*1.2}" cy="${-1+i*1.5}" r="0.8" fill="rgba(255,255,255,0.7)"/>`).join('')}<path d="M-3,-8 Q0,-12 3,-8" fill="none" stroke="#4A8C5A" stroke-width="1.2"/><line x1="0" y1="-8" x2="0" y2="-12" stroke="#4A8C5A" stroke-width="1"/></g>`}
+function meadowFlower(x,base,h,color){return `<g><line x1="${x}" y1="${base}" x2="${x}" y2="${base-h}" stroke="#5A8C6A" stroke-width="1"/><circle cx="${x}" cy="${base-h}" r="3" fill="${color}"/></g>`}
+function magnolia(x,y){return `<g transform="translate(${x},${y})">${[...Array(6)].map((_,i)=>{const a=i*60*(Math.PI/180);return `<ellipse cx="${Math.cos(a)*9}" cy="${Math.sin(a)*9}" rx="5" ry="3" transform="rotate(${i*60})" fill="#F5EFE0" stroke="#E8C5C5" stroke-width="0.4"/>`}).join('')}<circle r="3" fill="#E8C5C5"/></g>`}
+function sunflower(x,y,r){return `<g transform="translate(${x},${y})">${[...Array(14)].map((_,i)=>{const a=i*(360/14)*(Math.PI/180);return `<ellipse cx="${Math.cos(a)*r}" cy="${Math.sin(a)*r}" rx="${r*0.28}" ry="${r*0.12}" transform="rotate(${i*(360/14)})" fill="#E8B830"/>`}).join('')}<circle r="${r*0.4}" fill="#5C3A1E"/>${[...Array(12)].map((_,i)=>{const a=i*30*(Math.PI/180);return `<circle cx="${Math.cos(a)*r*0.25}" cy="${Math.sin(a)*r*0.25}" r="${r*0.04}" fill="#C89030"/>`}).join('')}</g>`}
+function checker(x,y){return `<rect x="${x}" y="${y}" width="10" height="10" fill="#1A2238"/>`}
+function moroccan(x,y){return `<g transform="translate(${x},${y})"><polygon points="0,-18 5,-5 18,0 5,5 0,18 -5,5 -18,0 -5,-5" fill="none" stroke="#3A8C8A" stroke-width="1.5"/><polygon points="0,-10 3,-3 10,0 3,3 0,10 -3,3 -10,0 -3,-3" fill="#C4603A"/></g>`}
+function polka(x,y,c){return `<circle cx="${x}" cy="${y}" r="5" fill="${c}"/>`}
+function argyle(x,y,c){return `<g transform="translate(${x},${y})"><polygon points="0,-28 18,0 0,28 -18,0" fill="${c}" opacity="0.7"/><polygon points="0,-20 12,0 0,20 -12,0" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/></g>`}
+function scallops(){let s='';for(let r=0;r<4;r++){for(let c=0;c<7;c++){const x=c*20+(r%2)*10;const y=r*22+15;s+=`<path d="M${x-10},${y} Q${x},${y-14} ${x+10},${y}" fill="${r%2===0?'#F2998A':'#FAF3E7'}" stroke="#DCD0BB" stroke-width="0.5"/>`}}return s;}
+function honeycomb(){let h='';const hw=13,ht=15;for(let r=0;r<5;r++){for(let c=0;c<5;c++){const x=c*hw*2+(r%2)*hw+12;const y=r*ht*1.5+15;const fill=(c+r)%3===0?'#E8B830':(c+r)%3===1?'#F8E8C0':'#F5D080';h+=`<polygon points="${x},${y-ht} ${x+hw},${y-ht/2} ${x+hw},${y+ht/2} ${x},${y+ht} ${x-hw},${y+ht/2} ${x-hw},${y-ht/2}" fill="${fill}" stroke="#C89820" stroke-width="0.5"/>`}}return h;}
+function washDots(){const cols=['#F2B0A8','#C4B8D8','#A8C8E0','#A8C4A8'];let d='';const pts=[[15,20,14],[45,15,10],[80,22,16],[105,18,8],[8,50,10],[35,48,13],[65,45,11],[95,55,15],[112,42,7],[20,80,12],[50,82,16],[82,78,9],[108,82,13],[28,108,10],[62,105,14],[95,110,9]];pts.forEach(([x,y,r],i)=>{d+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${cols[i%4]}" opacity="0.55"/>`});return d;}
+function bricks(){let b='';for(let r=0;r<7;r++){const offset=r%2===0?0:20;for(let c=-1;c<7;c++){const x=c*40+offset;const y=r*18;b+=`<rect x="${x+1}" y="${y+1}" width="38" height="16" rx="1" fill="${r%3===0?'#C4603A':r%3===1?'#D87850':'#B84A28'}"/>`}}return b;}
+function star(x,y,r,c,outline=false){const pts=[];for(let i=0;i<10;i++){const a=i*36*(Math.PI/180)-(Math.PI/2);const rad=i%2===0?r:r*0.4;pts.push(`${x+Math.cos(a)*rad},${y+Math.sin(a)*rad}`);}return outline?`<polygon points="${pts.join(' ')}" fill="none" stroke="${c}" stroke-width="1"/>`:`<polygon points="${pts.join(' ')}" fill="${c}"/>`;}
+function sparkle(x,y){return `<g transform="translate(${x},${y})"><line x1="0" y1="-5" x2="0" y2="5" stroke="rgba(255,255,255,0.8)" stroke-width="1"/><line x1="-5" y1="0" x2="5" y2="0" stroke="rgba(255,255,255,0.8)" stroke-width="1"/></g>`}
+function mushroom(x,y,r){return `<g transform="translate(${x},${y})"><rect x="${-r*0.35}" y="0" width="${r*0.7}" height="${r*0.7}" rx="2" fill="#F5EBD8"/><ellipse cx="0" cy="0" rx="${r}" ry="${r*0.7}" fill="#D94040"/><circle cx="${-r*0.3}" cy="${-r*0.1}" r="${r*0.15}" fill="rgba(255,255,255,0.8)"/><circle cx="${r*0.25}" cy="${-r*0.2}" r="${r*0.12}" fill="rgba(255,255,255,0.8)"/></g>`}
+function raindrop(x,y,r,c){return `<g transform="translate(${x},${y})"><path d="M0,${r} C${-r},${r*0.3} ${-r},${-r*0.3} 0,${-r} C${r},${-r*0.3} ${r},${r*0.3} 0,${r}Z" fill="${c}" opacity="0.8"/><line x1="${-r*0.25}" y1="${-r*0.1}" x2="${-r*0.45}" y2="${r*0.2}" stroke="rgba(255,255,255,0.6)" stroke-width="0.8"/></g>`}
+function cloudSun(x,y,scale=1){return `<g transform="translate(${x},${y}) scale(${scale})"><circle r="10" fill="#F5D060"/>${[...Array(8)].map((_,i)=>{const a=i*45*(Math.PI/180);return `<line x1="${Math.cos(a)*11}" y1="${Math.sin(a)*11}" x2="${Math.cos(a)*16}" y2="${Math.sin(a)*16}" stroke="#F09030" stroke-width="1.5"/>`}).join('')}<g transform="translate(12,-5)"><ellipse cx="0" cy="0" rx="10" ry="7" fill="#F8F8F8"/><ellipse cx="-6" cy="2" rx="7" ry="5" fill="#F8F8F8"/><ellipse cx="7" cy="2" rx="6" ry="5" fill="#F8F8F8"/></g></g>`}
+function heart(x,y,r,c){return `<g transform="translate(${x},${y})"><path d="M0,${r*0.4} C0,${r*0.4} ${-r},${-r*0.2} ${-r},${-r*0.5} C${-r},${-r} 0,${-r*0.8} 0,${-r*0.3} C0,${-r*0.8} ${r},${-r} ${r},${-r*0.5} C${r},${-r*0.2} 0,${r*0.4} 0,${r*0.4}Z" fill="${c}"/></g>`}
+function smiley(x,y,r){return `<g transform="translate(${x},${y})"><circle r="${r}" fill="#F5D060" stroke="#3A3450" stroke-width="0.8"/><circle cx="${-r*0.3}" cy="${-r*0.15}" r="${r*0.12}" fill="#1A2238"/><circle cx="${r*0.3}" cy="${-r*0.15}" r="${r*0.12}" fill="#1A2238"/><path d="M${-r*0.35},${r*0.2} Q0,${r*0.5} ${r*0.35},${r*0.2}" fill="none" stroke="#1A2238" stroke-width="${r*0.1}"/><circle cx="${-r*0.4}" cy="${r*0.1}" r="${r*0.15}" fill="#F2A0A0" opacity="0.5"/><circle cx="${r*0.4}" cy="${r*0.1}" r="${r*0.15}" fill="#F2A0A0" opacity="0.5"/></g>`}
+function houndstooth(){let h='';const size=20;for(let r=0;r<6;r++){for(let c=0;c<6;c++){const x=c*size,y=r*size,f=(c+r)%2===0?'#1A2238':'#F8F4EC';h+=`<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${f}"/>`;if((c+r)%2===0){h+=`<polygon points="${x+size},${y} ${x+size},${y+size/2} ${x+size/2},${y}" fill="#F8F4EC"/>`;h+=`<polygon points="${x},${y+size} ${x+size/2},${y+size} ${x},${y+size/2}" fill="#F8F4EC"/>`;}}};return h;}
+function triangles(){let t='';const s=20;for(let r=0;r<6;r++){for(let c=0;c<6;c++){const x=c*s,y=r*s;t+=`<polygon points="${x},${y} ${x+s},${y} ${x},${y+s}" fill="#C4A078"/><polygon points="${x+s},${y} ${x+s},${y+s} ${x},${y+s}" fill="#8B5E4A"/>`;}}return t;}
+function halfDropCircles(){let c='';const colors=['#F2998A','#A89BC4','#E8C030'];for(let col=0;col<6;col++){for(let row=0;row<6;row++){const x=col*22+12;const y=row*22+(col%2)*11+12;c+=`<circle cx="${x}" cy="${y}" r="9" fill="${colors[(col+row)%3]}" opacity="0.8"/><circle cx="${x-2}" cy="${y-2}" r="3" fill="rgba(255,255,255,0.3)"/>`}}return c;}
+function vineLeaves(){let vl='';const pts=[[20,15],[35,25],[50,15],[65,25],[80,15],[95,25],[110,17],[20,95],[35,105],[50,95],[65,105],[80,95],[95,105],[110,98]];pts.forEach(([x,y],i)=>{vl+=`<ellipse cx="${x}" cy="${y}" rx="6" ry="3.5" transform="rotate(${i%2===0?-30:30} ${x} ${y})" fill="#7AB07A"/><circle cx="${x}" cy="${y}" r="1.5" fill="#F5C842"/>`});return vl;}
+
+/* ═══════════════════════════════════════════════════════════
+   FILTER + RENDER STATE
+═══════════════════════════════════════════════════════════ */
+let filterCat='all';
+let filterUse='all-use';
+
+function setFilter(dim,val,el){
+  if(dim==='cat'){
+    filterCat=val;
+    document.querySelectorAll('.f-chip[data-filter="cat"]').forEach(c=>c.classList.remove('on'));
+  } else {
+    filterUse=val;
+    document.querySelectorAll('.f-chip[data-filter="use"]').forEach(c=>c.classList.remove('on'));
+  }
+  el.classList.add('on');
+  renderGrid();
+}
+
+function renderGrid(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const grid=document.getElementById('pattern-grid');
+  const empty=document.getElementById('empty-state');
+  let matches=PATTERNS.filter(p=>{
+    const catOk=filterCat==='all'||p.cat===filterCat;
+    const useOk=filterUse==='all-use'||p.use.includes(filterUse);
+    const qOk=!q||p.name.toLowerCase().includes(q)||p.cat.includes(q)||p.use.join(' ').includes(q);
+    return catOk&&useOk&&qOk;
+  });
+  document.getElementById('count-num').textContent=matches.length;
+  grid.innerHTML='';
+  if(matches.length===0){grid.style.display='none';empty.classList.add('show');}
+  else{grid.style.display='grid';empty.classList.remove('show');}
+  matches.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='p-card';
+    card.onclick=()=>openDrawer(p);
+    const catLabel=p.cat.charAt(0).toUpperCase()+p.cat.slice(1);
+    const useLabel=p.use.map(u=>u.charAt(0).toUpperCase()+u.slice(1)).join(', ');
+    card.innerHTML=`
+      <div class="p-swatch">${p.svgFn()}
+        <div class="p-tags"><span class="p-tag">${catLabel}</span><span class="p-tag use">${p.use[0].charAt(0).toUpperCase()+p.use[0].slice(1)}</span></div>
+      </div>
+      <div class="p-info">
+        <div class="p-name">${p.name}</div>
+        <div class="p-meta">${useLabel}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DETAIL DRAWER
+═══════════════════════════════════════════════════════════ */
+function openDrawer(p){
+  document.getElementById('d-swatch').innerHTML=p.svgFn();
+  document.getElementById('d-name').textContent=p.name;
+  const cats=document.getElementById('d-cats');
+  cats.innerHTML=`<span class="d-tag cat">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</span>`
+    +p.use.map(u=>`<span class="d-tag use">${u.charAt(0).toUpperCase()+u.slice(1)}</span>`).join('');
+  document.getElementById('d-steps').innerHTML=p.steps.map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('');
+  document.getElementById('d-markers').innerHTML=p.markers.map(m=>`<div class="marker-chip"><div class="marker-dot" style="background:${m.h}"></div><div class="marker-info"><div class="marker-name">${m.n}</div><div class="marker-hex">${m.h}</div></div></div>`).join('');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(e){if(e.target===document.getElementById('drawer'))document.getElementById('drawer').classList.remove('open');}
+
+/* ═══════════════════════════════════════════════════════════
+   AI GENERATE
+═══════════════════════════════════════════════════════════ */
+function openAIModal(){document.getElementById('ai-modal').classList.add('open')}
+function closeAIModal(){
+  document.getElementById('ai-modal').classList.remove('open');
+  document.getElementById('ai-output').style.display='none';
+  document.getElementById('ai-output').innerHTML='';
+  document.getElementById('ai-loader').style.display='none';
+  document.getElementById('ai-prompt').value='';
+  document.querySelectorAll('.m-chip').forEach(c=>c.classList.remove('on'));
+}
+function toggleAIChip(el,group){
+  document.querySelectorAll(`#ai-${group}-chips .m-chip`).forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+document.getElementById('ai-modal').addEventListener('click',e=>{if(e.target===document.getElementById('ai-modal'))closeAIModal()});
+
+async function runAIGenerate(){
+  const prompt=document.getElementById('ai-prompt').value.trim();
+  if(!prompt){document.getElementById('ai-prompt').focus();return;}
+  const cat=[...document.querySelectorAll('#ai-cat-chips .m-chip.on')].map(c=>c.textContent).join(', ')||'any';
+  const use=[...document.querySelectorAll('#ai-use-chips .m-chip.on')].map(c=>c.textContent).join(', ')||'any';
+  document.getElementById('ai-loader').style.display='flex';
+  document.getElementById('ai-output').style.display='none';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:1000,
+        messages:[{role:'user',content:`You are a coloring book art specialist. Generate a pattern suggestion for a cozy illustrated coloring book artist.
+
+Pattern description: "${prompt}"
+Category: ${cat}
+Use case: ${use}
+
+Respond with:
+
+**Pattern name**
+A short evocative name.
+
+**How to draw it (4 steps)**
+Step-by-step instructions for drawing this pattern with markers, written for someone who colors cozy illustrated books. Be very specific.
+
+**Marker colors that work well**
+4-5 specific color suggestions with hex codes in this format: Color name — #HEXCODE
+Choose colors that work for a soft, cozy, illustrated aesthetic.
+
+**Best used for**
+One sentence on where in a coloring page this pattern shines most.`}]
+      })
+    });
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    document.getElementById('ai-output').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    document.getElementById('ai-output').style.display='block';
+  }catch(e){
+    document.getElementById('ai-output').innerHTML='Something went wrong. Please try again.';
+    document.getElementById('ai-output').style.display='block';
+  }
+  document.getElementById('ai-loader').style.display='none';
+}
+
+// INIT
+renderGrid();
+</script>
+</body>
+</html>
