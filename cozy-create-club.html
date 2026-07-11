@@ -747,13 +747,15 @@ a{color:inherit;text-decoration:none}
   </div>
   <div class="page-inner" style="padding-top:16px">
     <div class="card" style="background:var(--lavender-soft);border:none">
-      <div class="card-desc">This is a general style gallery for this book. To find references for one specific page, upload a photo or describe the scene from the inspiration gallery instead.</div>
+      <div class="card-desc">Real colored pages from this book live on Pinterest and Instagram — that's where artists post their work. Use the links below to see them. The moodboard further down is stock photography in this book's vibe, for palette and styling ideas only — those images are not from the book.</div>
       <button class="btn btn-lavender" style="margin-top:12px;width:auto;padding:9px 16px;display:inline-flex" onclick="goPage('gallery')">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
         Match a specific page
       </button>
     </div>
-    <div class="section-label">Style gallery</div>
+    <div class="section-label">Real colored pages by other artists</div>
+    <div class="dslinks-grid" id="book-real-links"></div>
+    <div class="section-label" style="margin-top:26px">Aesthetic moodboard<span class="see-all" style="color:var(--text-light);cursor:default">Stock photos · not from the book</span></div>
     <div class="insp-grid" id="book-insp-grid"></div>
   </div>
 </div>
@@ -1147,11 +1149,11 @@ function goPage(id){
 
 /* ── BOOK DETAIL (Module 01 fallback: general book gallery) ─── */
 const bookQueryMap = {
-  'Comfy Corners':'cozy reading nook illustration aesthetic',
-  'Cozy Days':'cozy day aesthetic illustration',
-  'Girl Moments':'girl lifestyle aesthetic illustration',
-  'Cozy Cuties':'cute cozy character illustration',
-  'Cozy Friends':'friends cozy aesthetic illustration',
+  'Comfy Corners':'cozy reading nook interior warm aesthetic',
+  'Cozy Days':'cozy morning routine warm home aesthetic',
+  'Girl Moments':'cozy girl everyday life warm aesthetic',
+  'Cozy Cuties':'kawaii cute pastel plush aesthetic',
+  'Cozy Friends':'cute animal friends cozy pastel',
 };
 function bookBaseQuery(name){ return bookQueryMap[name] || (name+' cozy illustration aesthetic'); }
 const filterQueryMap = {'All':'','Trending now':' trending 2025','Pastel themes':' pastel','Most popular':' popular','Recently posted':' new'};
@@ -1160,11 +1162,21 @@ let currentBookDetail = {name:'', filter:'All'};
 
 function openBook(name, coverClass){
   document.getElementById('book-hero-title').textContent = name;
-  document.getElementById('book-hero-sub').textContent = 'Cocowyo · Style gallery & inspiration';
+  document.getElementById('book-hero-sub').textContent = 'Cocowyo · References & moodboard';
   const cover = document.getElementById('book-hero-cover');
   cover.className = 'book-hero-cover ' + coverClass;
   currentBookDetail = {name, filter:'All'};
   document.querySelectorAll('#pg-book-detail .filter-chip').forEach(c=>c.classList.toggle('on', c.textContent.trim()==='All'));
+
+  const bq = name + ' cocowyo coloring book';
+  const igTag = (name.replace(/[^a-zA-Z0-9]/g,'') + 'coloringbook').toLowerCase();
+  document.getElementById('book-real-links').innerHTML = [
+    {cls:'pi', label:'Pinterest', sub:'Colored pages', href:'https://pinterest.com/search/pins/?q='+encodeURIComponent(bq)},
+    {cls:'ig', label:'Instagram', sub:'#'+igTag, href:'https://www.instagram.com/explore/tags/'+igTag+'/'},
+    {cls:'yt', label:'YouTube', sub:'Color-alongs', href:'https://www.youtube.com/results?search_query='+encodeURIComponent(bq)},
+    {cls:'go', label:'Google Images', sub:'More examples', href:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(bq)}
+  ].map(l=>`<a class="slink ${l.cls}" href="${l.href}" target="_blank" rel="noopener">${slinkIcon(l.cls)}<div><div class="slink-name">${l.label}</div><div class="slink-sub">${l.sub}</div></div></a>`).join('');
+
   goPage('book-detail');
   loadBookGallery();
 }
@@ -1181,8 +1193,8 @@ async function loadBookGallery(){
   grid.innerHTML = photos.map(p=>`
     <div class="insp-tile">
       <div class="insp-tile-img">
-        <img class="insp-img" src="${p.src.medium}" alt="${currentBookDetail.name}" onload="this.classList.add('ready')">
-        <span class="insp-tag">${currentBookDetail.filter}</span>
+        <img class="insp-img" src="${p.src.medium}" alt="Mood photo for ${currentBookDetail.name}" onload="this.classList.add('ready')">
+        <span class="insp-tag">Mood</span>
       </div>
       <div class="insp-tile-label">📷 ${p.photographer||'Pexels'}</div>
     </div>`).join('');
