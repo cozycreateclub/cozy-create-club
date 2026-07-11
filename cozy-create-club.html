@@ -755,6 +755,8 @@ a{color:inherit;text-decoration:none}
     </div>
     <div class="section-label">Real colored pages by other artists</div>
     <div class="dslinks-grid" id="book-real-links"></div>
+    <div class="section-label" style="margin-top:26px">Pinterest board — inside the app<span class="see-all" id="book-pin-unlink" style="display:none" onclick="unlinkBookBoard()">Unlink board</span></div>
+    <div id="book-pin-board"></div>
     <div class="section-label" style="margin-top:26px">Aesthetic moodboard<span class="see-all" style="color:var(--text-light);cursor:default">Stock photos · not from the book</span></div>
     <div class="insp-grid" id="book-insp-grid"></div>
   </div>
@@ -1178,6 +1180,7 @@ function openBook(name, coverClass){
   ].map(l=>`<a class="slink ${l.cls}" href="${l.href}" target="_blank" rel="noopener">${slinkIcon(l.cls)}<div><div class="slink-name">${l.label}</div><div class="slink-sub">${l.sub}</div></div></a>`).join('');
 
   goPage('book-detail');
+  renderBookPinBoard(name);
   loadBookGallery();
 }
 
@@ -1205,6 +1208,66 @@ function toggleFilter(el){
   el.classList.add('on');
   currentBookDetail.filter = el.textContent.trim();
   loadBookGallery();
+}
+
+/* ── PINTEREST BOARD EMBED (official pinit.js widget — no API key) ─── */
+const PIN_BOARDS_KEY = 'ccc-book-boards';
+let BOOK_BOARDS = {};
+try{ BOOK_BOARDS = JSON.parse(localStorage.getItem(PIN_BOARDS_KEY)||'{}'); }catch(e){ BOOK_BOARDS = {}; }
+
+function buildPins(container){
+  if(window.PinUtils){ window.PinUtils.build(container); return; }
+  if(!document.getElementById('pinit-js')){
+    const s = document.createElement('script');
+    s.id = 'pinit-js';
+    s.src = 'https://assets.pinterest.com/js/pinit.js';
+    s.async = true;
+    document.body.appendChild(s);
+  }
+  // pinit.js scans the whole DOM when it finishes loading, so anchors
+  // inserted before that point are picked up automatically.
+}
+
+function renderBookPinBoard(name){
+  const wrap = document.getElementById('book-pin-board');
+  const unlink = document.getElementById('book-pin-unlink');
+  const url = BOOK_BOARDS[name];
+  if(url){
+    unlink.style.display = 'inline';
+    const w = Math.max(300, Math.min(wrap.clientWidth || 340, 900));
+    wrap.innerHTML = `<a data-pin-do="embedBoard" data-pin-board-width="${w}" data-pin-scale-height="360" data-pin-scale-width="115" href="${url}"></a>
+      <div class="gal-results-empty" style="padding:8px 0 0;font-size:11px;text-align:left">Live from your Pinterest board — pins you save there appear here.</div>`;
+    buildPins(wrap);
+  } else {
+    unlink.style.display = 'none';
+    wrap.innerHTML = `
+      <div class="card card-warm" style="margin-bottom:0">
+        <div class="card-desc" style="margin-bottom:10px">See pins right here without leaving the app: make a public Pinterest board for this book, save colored pages you find via the links above, then paste the board's URL once.</div>
+        <input type="text" class="modal-input" id="book-pin-input" placeholder="https://www.pinterest.com/yourname/board-name/">
+        <button class="btn" style="margin-top:10px" onclick="saveBookBoard()">Show this board in the app</button>
+        <div class="gal-results-empty" id="book-pin-error" style="display:none;padding:8px 0 0;color:var(--coral)"></div>
+      </div>`;
+  }
+}
+
+function saveBookBoard(){
+  const raw = (document.getElementById('book-pin-input').value||'').trim();
+  const err = document.getElementById('book-pin-error');
+  const m = raw.match(/^https?:\/\/([a-z]+\.)?pinterest\.[a-z.]+\/([^\/]+)\/([^\/?#]+)\/?/i);
+  if(!m || ['pin','search','ideas'].includes(m[2].toLowerCase())){
+    err.textContent = "That doesn't look like a board URL — it should be pinterest.com/username/board-name";
+    err.style.display = 'block';
+    return;
+  }
+  BOOK_BOARDS[currentBookDetail.name] = `https://www.pinterest.com/${m[2]}/${m[3]}/`;
+  try{ localStorage.setItem(PIN_BOARDS_KEY, JSON.stringify(BOOK_BOARDS)); }catch(e){}
+  renderBookPinBoard(currentBookDetail.name);
+}
+
+function unlinkBookBoard(){
+  delete BOOK_BOARDS[currentBookDetail.name];
+  try{ localStorage.setItem(PIN_BOARDS_KEY, JSON.stringify(BOOK_BOARDS)); }catch(e){}
+  renderBookPinBoard(currentBookDetail.name);
 }
 
 /* ── ADD BOOK MODAL ─── */
