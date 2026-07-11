@@ -954,12 +954,19 @@ a{color:inherit;text-decoration:none}
     <p class="hero-sub">Desk layouts, angles, backgrounds and themes for every format.</p>
   </div>
   <div class="page-inner" style="padding-top:16px">
-    <div class="coming-soon">
-      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
-      <h3>Module under construction</h3>
-      <p>Shooting setups for photo, video, text and audio posts build here next.</p>
-      <span class="module-badge">Module 09</span>
+    <div class="tut-filter-block">
+      <div class="tut-filter-label">What are you posting?</div>
+      <div class="tut-chip-row">
+        <div class="f-chip on" data-fmt="photo" onclick="setStudioFormat('photo',this)">📷 Photo</div>
+        <div class="f-chip" data-fmt="video" onclick="setStudioFormat('video',this)">🎬 Video</div>
+        <div class="f-chip" data-fmt="text" onclick="setStudioFormat('text',this)">✏️ Text</div>
+        <div class="f-chip" data-fmt="audio" onclick="setStudioFormat('audio',this)">🎙 Audio</div>
+      </div>
     </div>
+    <div class="section-label">Your setup recipe</div>
+    <div id="studio-recipe"></div>
+    <div class="section-label" style="margin-top:26px" id="studio-ref-label">Angle references</div>
+    <div class="insp-grid" id="studio-angles"></div>
   </div>
 </div>
 
@@ -971,11 +978,16 @@ a{color:inherit;text-decoration:none}
     <p class="hero-sub">Trend pulse and content ideas for paper embroidery.</p>
   </div>
   <div class="page-inner" style="padding-top:16px">
-    <div class="coming-soon">
-      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>
-      <h3>Module under construction</h3>
-      <p>Embroidery trend pulse and content ideas build here in a later phase.</p>
-    </div>
+    <div class="section-label">Today's signal</div>
+    <div class="card" style="background:var(--lavender-soft);border:none" id="hh-embroidery-highlight"></div>
+    <div class="section-label" style="margin-top:22px">Trending themes<span class="see-all" style="color:var(--text-light);cursor:default">Tap to explore on Pinterest</span></div>
+    <div class="insp-grid" id="hh-embroidery-themes"></div>
+    <div class="section-label" style="margin-top:26px">Formats that are peaking</div>
+    <div id="hh-embroidery-formats"></div>
+    <button class="btn btn-lavender" style="margin-top:6px" onclick="goPage('ideas')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+      Content ideas for embroidery
+    </button>
   </div>
 </div>
 
@@ -986,11 +998,16 @@ a{color:inherit;text-decoration:none}
     <p class="hero-sub">Trend pulse and content ideas for set builds and reviews.</p>
   </div>
   <div class="page-inner" style="padding-top:16px">
-    <div class="coming-soon">
-      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="4" y="9" width="16" height="11" rx="1"/><circle cx="8" cy="6" r="1.6"/><circle cx="13" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/></svg>
-      <h3>Module under construction</h3>
-      <p>Lego trend pulse and content ideas build here in a later phase.</p>
-    </div>
+    <div class="section-label">Today's signal</div>
+    <div class="card" style="background:#FAF1DC;border:none" id="hh-lego-highlight"></div>
+    <div class="section-label" style="margin-top:22px">Trending themes<span class="see-all" style="color:var(--text-light);cursor:default">Tap to explore on Pinterest</span></div>
+    <div class="insp-grid" id="hh-lego-themes"></div>
+    <div class="section-label" style="margin-top:26px">Formats that are peaking</div>
+    <div id="hh-lego-formats"></div>
+    <button class="btn" style="margin-top:6px;background:var(--hobby-lego)" onclick="goPage('ideas')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+      Content ideas for Lego
+    </button>
   </div>
 </div>
 
@@ -1001,11 +1018,16 @@ a{color:inherit;text-decoration:none}
     <p class="hero-sub">What's trending in BookTok and Bookstagram right now.</p>
   </div>
   <div class="page-inner" style="padding-top:16px">
-    <div class="coming-soon">
-      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-      <h3>Module under construction</h3>
-      <p>Fiction trend pulse builds here in a later phase.</p>
-    </div>
+    <div class="section-label">Today's signal</div>
+    <div class="card" style="background:var(--forest-soft);border:none" id="hh-fiction-highlight"></div>
+    <div class="section-label" style="margin-top:22px">Trending themes<span class="see-all" style="color:var(--text-light);cursor:default">Tap to explore on Pinterest</span></div>
+    <div class="insp-grid" id="hh-fiction-themes"></div>
+    <div class="section-label" style="margin-top:26px">Formats that are peaking</div>
+    <div id="hh-fiction-formats"></div>
+    <button class="btn" style="margin-top:6px;background:var(--forest)" onclick="goPage('ideas')">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+      Content ideas for fiction
+    </button>
   </div>
 </div>
 
@@ -1760,9 +1782,42 @@ let TRENDS = {
       {name:"Marker swatch matching", note:"Showing the exact markers picked for a page before starting — high comment engagement."}
     ]
   },
-  embroidery: { highlight: {title:"Monthly calendar season", note:"Paper embroidery calendars with seasonal florals are having a moment this month."} },
-  lego:       { highlight: {title:"Botanical sets are buzzing", note:"Build-and-display content for botanical and architecture sets is getting strong engagement."} },
-  fiction:    { highlight: {title:"Cozy fantasy still dominates", note:"BookTok continues to favor cozy fantasy and romantasy releases this season."} }
+  embroidery: {
+    highlight: {title:"Monthly calendar season", note:"Paper embroidery calendars with seasonal florals are having a moment this month."},
+    themes: [
+      {name:"Seasonal florals", note:"This month's blooms on stitched calendars", q:"paper embroidery flowers craft"},
+      {name:"Stitched stationery", note:"Cards, bookmarks, gift tags", q:"embroidered paper card craft"},
+      {name:"Mini hoop moments", note:"Tiny hoops as desk and shelf decor", q:"mini embroidery hoop cute"}
+    ],
+    formats: [
+      {name:"Satisfying stitch loops", note:"Short close-up loops of a single stitch pass — strong watch-time."},
+      {name:"Calendar page reveal", note:"Month-end flip through the finished calendar page."}
+    ]
+  },
+  lego: {
+    highlight: {title:"Botanical sets are buzzing", note:"Build-and-display content for botanical and architecture sets is getting strong engagement."},
+    themes: [
+      {name:"Botanical builds", note:"Flowers, bonsai, wildflower arrangements", q:"lego flowers botanical build"},
+      {name:"Display shelf styling", note:"Finished sets styled into home decor", q:"lego display shelf home"},
+      {name:"Architecture skylines", note:"City and landmark sets", q:"lego architecture skyline set"}
+    ],
+    formats: [
+      {name:"Real-time build clips", note:"One bag, one sitting, hands in frame — no time-lapse."},
+      {name:"Honest set reviews", note:"Value-for-money verdicts are outperforming pure showcases."}
+    ]
+  },
+  fiction: {
+    highlight: {title:"Cozy fantasy still dominates", note:"BookTok continues to favor cozy fantasy and romantasy releases this season."},
+    themes: [
+      {name:"Cozy fantasy shelves", note:"Warm-lit shelfies of the genre stack", q:"cozy fantasy books aesthetic"},
+      {name:"Reading nook scenes", note:"Blankets, tea, and an open book", q:"reading nook cozy book aesthetic"},
+      {name:"Annotated pages", note:"Tabbed and highlighted favorites", q:"annotated book tabs reading"}
+    ],
+    formats: [
+      {name:"30-second TBRs", note:"Quick stack-and-hook to-be-read piles."},
+      {name:"No-spoiler wrap-ups", note:"Month-end verdicts with a strict spoiler ban."}
+    ]
+  }
 };
 
 function renderHomeMoodboard(){
@@ -1837,7 +1892,7 @@ Soft cozy colors only. Notes under 20 words. Plausible current trends for this n
     TRENDS.lego.highlight = j.lego ? {title:j.lego.title, note:j.lego.note} : TRENDS.lego.highlight;
     TRENDS.fiction.highlight = j.fiction ? {title:j.fiction.title, note:j.fiction.note} : TRENDS.fiction.highlight;
     TRENDS.updated = 'AI brief · generated ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    renderTrends(); renderHomeMoodboard();
+    renderTrends(); renderHomeMoodboard(); renderHobbyHomes();
   }catch(e){
     document.getElementById('trend-updated-label').textContent = "Couldn't reach the AI right now — showing the curated brief.";
   }
@@ -2114,6 +2169,124 @@ Tips must be immediately usable without watching anything. Queries must target t
 }
 
 renderTutorials();
+
+/* ══════════ LIGHT HOBBY TABS (reuse Modules 03 + 05) ══════════ */
+function renderThemeTiles(containerId, themes, idPrefix){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = themes.map((t,i)=>`
+    <a class="insp-tile" href="https://pinterest.com/search/pins/?q=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">
+      <div class="insp-tile-img" id="${idPrefix}-${i}"><div class="p-skeleton"></div></div>
+      <div class="insp-tile-label"><strong style="color:var(--navy);font-weight:500">${t.name}</strong><br>${t.note}</div>
+    </a>`).join('');
+  themes.forEach(async (t,i)=>{
+    const photos = await pexels(t.q, 1);
+    const cell = document.getElementById(idPrefix+'-'+i);
+    if(!cell) return;
+    cell.querySelector('.p-skeleton')?.remove();
+    if(photos.length){
+      cell.innerHTML = `<img class="insp-img" src="${photos[0].src.medium}" alt="${t.name}" onload="this.classList.add('ready')"><span class="insp-tag">Trending</span>`;
+    }
+  });
+}
+
+function renderHobbyHomes(){
+  ['embroidery','lego','fiction'].forEach(h=>{
+    const d = TRENDS[h];
+    const hlEl = document.getElementById('hh-'+h+'-highlight');
+    if(hlEl) hlEl.innerHTML = `<div class="card-title">${d.highlight.title}</div><div class="card-desc">${d.highlight.note}</div>`;
+    renderThemeTiles('hh-'+h+'-themes', d.themes||[], 'hh-'+h+'-thm');
+    const fEl = document.getElementById('hh-'+h+'-formats');
+    if(fEl) fEl.innerHTML = (d.formats||[]).map(f=>`
+      <div class="trend-format">
+        <div class="trend-format-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div><strong>${f.name}</strong><p>${f.note}</p></div>
+      </div>`).join('');
+  });
+}
+
+/* ══════════ MODULE 09: STUDIO SETUP ══════════ */
+let studioFormat = 'photo';
+
+const STUDIO = {
+  photo: {
+    refLabel: 'Angle references',
+    recipe: [
+      {k:'Angle', v:'Flat lay — camera directly overhead, page square to the frame. Keep your phone parallel to the desk so the page edges stay straight.'},
+      {k:'Background', v:'Cream linen cloth or warm wood desk. Give the page 5–8cm of breathing room on every side.'},
+      {k:'Lighting', v:'Window light from the left, no flash. Shoot mid-morning; if shadows are harsh, tape baking paper over the window.'},
+      {k:'Props', v:'Three max: the markers you used, one coffee cup, one small plant. Everything else off the desk.'}
+    ],
+    refs: [
+      {name:'Flat lay', note:'Overhead, page centered', q:'flat lay art supplies overhead desk'},
+      {name:'Hands in frame', note:'Mid-coloring, natural grip', q:'hands drawing coloring desk art'},
+      {name:'Detail close-up', note:'45° macro on one section', q:'closeup marker coloring paper art'}
+    ]
+  },
+  video: {
+    refLabel: 'Shot references',
+    recipe: [
+      {k:'Angle', v:'Overhead rig (or phone on a stack of books with a strip of tape). Lock focus and exposure before you start — tap and hold on the page.'},
+      {k:'Background', v:'Keep the exact same desk setup every video — consistency is what makes a feed feel like a studio.'},
+      {k:'Lighting', v:'One constant soft light. Never mix window light with a warm lamp — the color temperature shift ruins time-lapses.'},
+      {k:'Props', v:'Marker caps and swatch cards just out of frame so your hands can reach them without breaking the shot.'}
+    ],
+    refs: [
+      {name:'Process shot', note:'Overhead, real-time coloring', q:'overhead video recording drawing desk'},
+      {name:'Hands in frame', note:'Slight angle, cozy feel', q:'hands coloring markers desk warm'},
+      {name:'Time-lapse setup', note:'Phone rig above the desk', q:'phone tripod overhead desk setup'}
+    ]
+  },
+  text: {
+    refLabel: 'Card style references',
+    recipe: [
+      {k:'Theme card', v:'Cream background card with your navy heading font and one coral accent line — matches the app and your feed.'},
+      {k:'Background', v:'A softly blurred photo of your own desk behind the text keeps it on-brand without competing with the words.'},
+      {k:'Typography', v:'One serif for the hook (like Playfair), one clean sans for the body. Never more than two fonts.'},
+      {k:'Palette', v:'Pull the card colors from whatever page you most recently posted — instant visual continuity.'}
+    ],
+    refs: [
+      {name:'Quote cards', note:'Text-first, soft background', q:'aesthetic quote card cozy minimal'},
+      {name:'Cream minimal', note:'Warm neutral text layouts', q:'cream minimal flat lay stationery'},
+      {name:'Desk backdrop', note:'Blurred workspace behind text', q:'cozy desk blurred background warm'}
+    ]
+  },
+  audio: {
+    refLabel: 'Cover references',
+    recipe: [
+      {k:'Cover visual', v:'One static photo of your desk mid-project as the cover — same crop and warmth every episode so it reads as a series.'},
+      {k:'Motion option', v:'A 10-second loop of markers coloring works as a waveform background for reels and stories.'},
+      {k:'Lighting', v:'Shoot the cover in your usual window light so audio posts match the rest of the feed.'},
+      {k:'Branding', v:'Small round badge (your logo) bottom-right, coral accent — consistent across every audio post.'}
+    ],
+    refs: [
+      {name:'Cozy covers', note:'Warm desk scenes for cover art', q:'cozy desk warm aesthetic overhead'},
+      {name:'Ambient loops', note:'Close-up motion backgrounds', q:'coloring markers closeup motion'},
+      {name:'Podcast style', note:'Simple branded cover looks', q:'podcast cover minimal warm aesthetic'}
+    ]
+  }
+};
+
+function setStudioFormat(f, el){
+  studioFormat = f;
+  document.querySelectorAll('#pg-studio .f-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderStudio();
+}
+
+function renderStudio(){
+  const d = STUDIO[studioFormat];
+  document.getElementById('studio-recipe').innerHTML = d.recipe.map(r=>`
+    <div class="trend-format">
+      <div class="trend-format-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div><strong>${r.k}</strong><p>${r.v}</p></div>
+    </div>`).join('');
+  document.getElementById('studio-ref-label').textContent = d.refLabel;
+  renderThemeTiles('studio-angles', d.refs, 'studio-ref-'+studioFormat);
+}
+
+renderHobbyHomes();
+renderStudio();
 
 goPage('home');
 </script>
